@@ -9,9 +9,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Construct;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.associations.ConstructCassetteAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.ConstructGenomicEntityAssociation;
@@ -30,6 +32,7 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.C
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.ConstructSymbolSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.ConstructSynonymSlotAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -49,7 +52,13 @@ public class ConstructValidator extends ReagentValidator {
 
 	private String errorMessage;
 
-	public Construct validateConstructUpdate(Construct uiEntity) {
+	/**
+	 * @param manageSubResourceFields whether the calling endpoint's JSON view carries the construct's lists and
+	 *        associations: references, related notes, secondary IDs, synonyms, components and the genomic entity and
+	 *        cassette associations. An endpoint whose view omits them leaves the stored ones as they are; the detail
+	 *        page writes them through the construct's sub-resources.
+	 */
+	public Construct validateConstructUpdate(Construct uiEntity, Boolean manageSubResourceFields) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not update Construct: [" + uiEntity.getId() + "]";
 
@@ -66,7 +75,7 @@ public class ConstructValidator extends ReagentValidator {
 			// found
 		}
 
-		return validateConstruct(uiEntity, dbEntity);
+		return validateConstruct(uiEntity, dbEntity, manageSubResourceFields);
 	}
 
 	public Construct validateConstructCreate(Construct uiEntity) {
@@ -75,39 +84,31 @@ public class ConstructValidator extends ReagentValidator {
 
 		Construct dbEntity = new Construct();
 
-		return validateConstruct(uiEntity, dbEntity);
+		return validateConstruct(uiEntity, dbEntity, true);
 	}
 
-	public Construct validateConstruct(Construct uiEntity, Construct dbEntity) {
-
-		List<String> previousReferenceCuries = new ArrayList<String>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getReferences())) {
-			previousReferenceCuries = dbEntity.getReferences().stream().map(Reference::getCurie).collect(Collectors.toList());
-		}
-		if (CollectionUtils.isNotEmpty(uiEntity.getReferences())) {
-			List<Reference> references = new ArrayList<Reference>();
-			for (Reference uiReference : uiEntity.getReferences()) {
-				Reference reference = validateReference(uiReference, previousReferenceCuries);
-				if (reference != null) {
-					references.add(reference);
-				}
-			}
-			dbEntity.setReferences(references);
-		} else {
-			dbEntity.setReferences(null);
+	public Construct validateConstruct(Construct uiEntity, Construct dbEntity, Boolean manageSubResourceFields) {
+		if (manageSubResourceFields) {
+			validateConstructReferences(uiEntity, dbEntity);
 		}
 
-		dbEntity = (Construct) validateCommonReagentFields(uiEntity, dbEntity, null);
+		dbEntity = (Construct) validateCommonReagentFields(uiEntity, dbEntity, VocabularyConstants.CONSTRUCT_NOTE_TYPES_VOCABULARY_TERM_SET, true, manageSubResourceFields);
 
 		ConstructSymbolSlotAnnotation symbol = validateConstructSymbol(uiEntity, dbEntity);
 		ConstructFullNameSlotAnnotation fullName = validateConstructFullName(uiEntity, dbEntity);
-		List<ConstructSynonymSlotAnnotation> synonyms = validateConstructSynonyms(uiEntity, dbEntity);
-		List<ConstructComponentSlotAnnotation> components = validateConstructComponents(uiEntity, dbEntity);
 
-		List<ConstructGenomicEntityAssociation> geAssociations = validateConstructGenomicEntityAssociations(uiEntity, dbEntity);
-		List<ConstructCassetteAssociation> cassetteAssociations = validateConstructCassetteAssociations(uiEntity, dbEntity);
+		List<ConstructSynonymSlotAnnotation> synonyms = null;
+		List<ConstructComponentSlotAnnotation> components = null;
+		List<ConstructGenomicEntityAssociation> geAssociations = null;
+		List<ConstructCassetteAssociation> cassetteAssociations = null;
+		if (manageSubResourceFields) {
+			synonyms = validateConstructSynonyms(uiEntity, dbEntity);
+			components = validateConstructComponents(uiEntity, dbEntity);
+			geAssociations = validateConstructGenomicEntityAssociations(uiEntity, dbEntity);
+			cassetteAssociations = validateConstructCassetteAssociations(uiEntity.getConstructCassetteAssociations(), dbEntity);
+		}
 
-		String uniqueId = validateUniqueId(uiEntity, dbEntity);
+		String uniqueId = validateUniqueId(manageSubResourceFields ? uiEntity : withStoredComponents(uiEntity, dbEntity), dbEntity);
 		dbEntity.setUniqueId(uniqueId);
 
 		response.convertErrorMessagesToMap();
@@ -137,6 +138,34 @@ public class ConstructValidator extends ReagentValidator {
 		}
 		dbEntity.setConstructFullName(fullName);
 
+		if (manageSubResourceFields) {
+			applyConstructLists(dbEntity, synonyms, components, geAssociations, cassetteAssociations);
+		}
+
+		return dbEntity;
+	}
+
+	private void validateConstructReferences(Construct uiEntity, Construct dbEntity) {
+		List<String> previousReferenceCuries = new ArrayList<String>();
+		if (CollectionUtils.isNotEmpty(dbEntity.getReferences())) {
+			previousReferenceCuries = dbEntity.getReferences().stream().map(Reference::getCurie).collect(Collectors.toList());
+		}
+		if (CollectionUtils.isNotEmpty(uiEntity.getReferences())) {
+			List<Reference> references = new ArrayList<Reference>();
+			for (Reference uiReference : uiEntity.getReferences()) {
+				Reference reference = validateReference(uiReference, previousReferenceCuries);
+				if (reference != null) {
+					references.add(reference);
+				}
+			}
+			dbEntity.setReferences(references);
+		} else {
+			dbEntity.setReferences(null);
+		}
+	}
+
+	private void applyConstructLists(Construct dbEntity, List<ConstructSynonymSlotAnnotation> synonyms, List<ConstructComponentSlotAnnotation> components,
+			List<ConstructGenomicEntityAssociation> geAssociations, List<ConstructCassetteAssociation> cassetteAssociations) {
 		if (dbEntity.getConstructSynonyms() != null) {
 			dbEntity.getConstructSynonyms().clear();
 		}
@@ -167,6 +196,17 @@ public class ConstructValidator extends ReagentValidator {
 			dbEntity.getConstructGenomicEntityAssociations().addAll(geAssociations);
 		}
 
+		replaceCassetteAssociations(dbEntity, cassetteAssociations);
+	}
+
+	/**
+	 * Sets the construct's cassette associations to the validated ones: an association the construct holds and the
+	 * list omits is removed, and each new one is assigned to the construct.
+	 *
+	 * @param dbEntity the construct the associations belong to
+	 * @param cassetteAssociations the validated associations, the stored ones among them as the construct holds them
+	 */
+	public void replaceCassetteAssociations(Construct dbEntity, List<ConstructCassetteAssociation> cassetteAssociations) {
 		if (dbEntity.getConstructCassetteAssociations() == null) {
 			dbEntity.setConstructCassetteAssociations(new ArrayList<>());
 		}
@@ -177,8 +217,110 @@ public class ConstructValidator extends ReagentValidator {
 				dbEntity.getConstructCassetteAssociations().add(association);
 			}
 		}
+	}
 
-		return dbEntity;
+	/**
+	 * The construct the unique ID is built from when the payload carries none of its components: the submitted
+	 * symbol and full name, with the components the construct holds.
+	 */
+	private Construct withStoredComponents(Construct uiEntity, Construct dbEntity) {
+		Construct uniqueIdSource = new Construct();
+		uniqueIdSource.setConstructSymbol(uiEntity.getConstructSymbol());
+		uniqueIdSource.setConstructFullName(uiEntity.getConstructFullName());
+		uniqueIdSource.setConstructComponents(dbEntity.getConstructComponents());
+		return uniqueIdSource;
+	}
+
+	public List<ConstructSynonymSlotAnnotation> validateSynonymReplacement(Construct dbEntity, List<ConstructSynonymSlotAnnotation> incomingSynonyms) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingSynonyms, dbEntity.getConstructSynonyms(), "constructSynonyms", "displayText", "Synonyms",
+			constructSynonymValidator::validateConstructSynonymSlotAnnotation, ConstructSynonymSlotAnnotation::setSingleConstruct);
+	}
+
+	public List<Note> validateRelatedNoteReplacement(Construct dbEntity, List<Note> incomingNotes) {
+		return validateRelatedNoteReplacement(dbEntity, incomingNotes, VocabularyConstants.CONSTRUCT_NOTE_TYPES_VOCABULARY_TERM_SET);
+	}
+
+	public List<Reference> validateReferenceReplacement(Construct dbEntity, List<Reference> incomingReferences) {
+		return validateReferenceReplacement(dbEntity.getId(), incomingReferences, dbEntity.getReferences());
+	}
+
+	/**
+	 * Validates the IDs the construct's secondary IDs sub-resource is to hold, in submitted order. Each must be
+	 * present and not blank, and no two alike.
+	 *
+	 * @param dbEntity the construct the secondary IDs belong to
+	 * @param incomingSecondaryIds the submitted secondary IDs
+	 * @return the secondary IDs, trimmed, one per submitted entry
+	 * @throws ApiErrorException when the list is missing or any entry is rejected, with each entry's errors keyed by
+	 *         its index
+	 */
+	public List<String> validateSecondaryIdReplacement(Construct dbEntity, List<String> incomingSecondaryIds) {
+		response = new ObjectResponse<>();
+		String field = "secondaryIdentifiers";
+		String errorTitle = "Could not update Secondary IDs for: [" + dbEntity.getId() + "]";
+
+		if (incomingSecondaryIds == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		List<String> validatedSecondaryIds = new ArrayList<>();
+		boolean allValid = true;
+		Set<String> seenSecondaryIds = new HashSet<>();
+		for (int ix = 0; ix < incomingSecondaryIds.size(); ix++) {
+			String secondaryId = StringUtils.trimToNull(incomingSecondaryIds.get(ix));
+			if (secondaryId == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("secondaryId", ValidationConstants.REQUIRED_MESSAGE));
+				continue;
+			}
+			if (!seenSecondaryIds.add(secondaryId)) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("secondaryId", ValidationConstants.DUPLICATE_MESSAGE));
+				continue;
+			}
+			validatedSecondaryIds.add(secondaryId);
+		}
+
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		return validatedSecondaryIds;
+	}
+
+	/**
+	 * Validates the associations the construct's cassette associations sub-resource is to hold, with the same rules
+	 * as associations saved through the construct itself: an entry with an id is one the construct holds and is kept
+	 * as stored, an entry without one is a new association, and no two name the same cassette with the same relation.
+	 *
+	 * @param dbEntity the construct the associations belong to
+	 * @param incomingAssociations the submitted associations
+	 * @return the validated associations, one per submitted entry
+	 * @throws ApiErrorException when the list is missing or any entry is rejected, with each entry's errors keyed by
+	 *         its index
+	 */
+	public List<ConstructCassetteAssociation> validateCassetteAssociationReplacement(Construct dbEntity, List<ConstructCassetteAssociation> incomingAssociations) {
+		response = new ObjectResponse<>();
+		String field = "constructCassetteAssociations";
+		String errorTitle = "Could not update Cassettes for: [" + dbEntity.getId() + "]";
+
+		if (incomingAssociations == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		List<ConstructCassetteAssociation> validatedAssociations = validateConstructCassetteAssociations(incomingAssociations, dbEntity);
+		if (response.hasErrors()) {
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		return validatedAssociations;
 	}
 
 	private Reference validateReference(Reference uiEntity, List<String> previousCuries) {
@@ -346,7 +488,7 @@ public class ConstructValidator extends ReagentValidator {
 		return validatedAssociations;
 	}
 
-	private List<ConstructCassetteAssociation> validateConstructCassetteAssociations(Construct uiEntity, Construct dbEntity) {
+	private List<ConstructCassetteAssociation> validateConstructCassetteAssociations(List<ConstructCassetteAssociation> incomingAssociations, Construct dbEntity) {
 		String field = "constructCassetteAssociations";
 
 		Map<Long, ConstructCassetteAssociation> storedById = new HashMap<>();
@@ -357,14 +499,19 @@ public class ConstructValidator extends ReagentValidator {
 		}
 
 		List<ConstructCassetteAssociation> validatedAssociations = new ArrayList<>();
-		if (CollectionUtils.isEmpty(uiEntity.getConstructCassetteAssociations())) {
+		if (CollectionUtils.isEmpty(incomingAssociations)) {
 			return validatedAssociations;
 		}
 
 		Set<String> associationKeys = new HashSet<>();
 		Boolean allValid = true;
-		for (int ix = 0; ix < uiEntity.getConstructCassetteAssociations().size(); ix++) {
-			ConstructCassetteAssociation cca = uiEntity.getConstructCassetteAssociations().get(ix);
+		for (int ix = 0; ix < incomingAssociations.size(); ix++) {
+			ConstructCassetteAssociation cca = incomingAssociations.get(ix);
+			if (cca == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("constructCassetteAssociationObject", ValidationConstants.REQUIRED_MESSAGE));
+				continue;
+			}
 			if (cca.getId() != null) {
 				ConstructCassetteAssociation stored = storedById.get(cca.getId());
 				if (stored == null) {

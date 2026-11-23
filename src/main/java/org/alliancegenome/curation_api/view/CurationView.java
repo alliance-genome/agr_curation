@@ -55,8 +55,7 @@ public class CurationView {
 	public static class ConstructView extends FieldsOnly {
 	}
 
-	public static class ConstructDetailView extends ConstructView {
-	}
+
 
 	/** SCRUM-6535: the new Constructs model (epic SCRUM-6382). */
 	public static class CassetteView extends FieldsOnly {
@@ -134,6 +133,10 @@ public class CurationView {
 
 	// The gene detail endpoints: the gene's own single-value fields, but none of its lists or associations
 	public static class GeneDetailView extends EntityDetailView {
+	}
+
+	// The construct detail endpoints: the construct's own single-value fields, but none of its lists or associations
+	public static class ConstructDetailView extends EntityDetailView {
 	}
 
 	public static class GeneUpdate extends GeneView {

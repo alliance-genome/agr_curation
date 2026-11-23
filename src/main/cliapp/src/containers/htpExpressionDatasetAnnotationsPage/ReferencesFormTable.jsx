@@ -1,7 +1,7 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { CrossReferenceTemplate } from '../../../components/Templates/reference/CrossReferenceTemplate';
-import { ShortCitationTemplate } from '../../../components/Templates/reference/ShortCitationTemplate';
+import { CrossReferenceTemplate } from '../../components/Templates/reference/CrossReferenceTemplate';
+import { ShortCitationTemplate } from '../../components/Templates/reference/ShortCitationTemplate';
 
 export const ReferencesFormTable = ({ references, tableRef }) => {
 	return (
