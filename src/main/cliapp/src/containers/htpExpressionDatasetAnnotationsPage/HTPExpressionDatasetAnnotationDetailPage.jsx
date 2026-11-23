@@ -12,7 +12,7 @@ import { FormFieldVisibilityMenu, FormSection, useFormFieldVisibility } from '..
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
-import { ReferencesFormTable } from '../constructsPage/references/ReferencesFormTable';
+import { ReferencesFormTable } from './ReferencesFormTable';
 import { ExternalDataBaseEntityTable } from './ExternalDataBaseEntityTable';
 import { RelatedNotesTable } from './RelatedNotesTable';
 import { HTPExpressionDatasetSampleAnnotationsTable } from '../htpExpressionDatasetSampleAnnotationsPage/HTPExpressionDatasetSampleAnnotationsTable';
