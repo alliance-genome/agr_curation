@@ -5,7 +5,8 @@
     },
     "name": "TEST HTP DATASET TITLE",
     "category_tag_names": [
-      "gene expression - general"
+      "gene expression - general",
+      "response to chemical"
     ],
     "data_provider_dto": {
       "source_organization_abbreviation": "FB"

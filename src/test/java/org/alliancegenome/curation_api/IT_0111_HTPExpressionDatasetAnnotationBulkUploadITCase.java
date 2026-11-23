@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -164,7 +165,9 @@ public class IT_0111_HTPExpressionDatasetAnnotationBulkUploadITCase extends Base
 	public void htpDatasetBulkUploadCategoryTagSynonymMatch() throws Exception {
 		// SCRUM-6714: category_tag_names must resolve by synonym, not just exact term name - DQMs
 		// submit either interchangeably. "gene expression - general" is a seeded synonym of the
-		// "baseline" term (v0.35.0.9__add_htp_tags.sql).
+		// "baseline" term (v0.35.0.9__add_htp_tags.sql). "response to chemical" is a synonym of
+		// "chemical stimulus" that was removed from alpha outside of a migration (separate bug) and
+		// restored by v0.55.0.6__restore_chemical_stimulus_response_to_chemical_synonym.sql.
 		checkSuccessfulBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "UM_02_category_tag_synonym_match.json");
 
 		RestAssured.given().
@@ -176,8 +179,8 @@ public class IT_0111_HTPExpressionDatasetAnnotationBulkUploadITCase extends Base
 			statusCode(200).
 			body("returnedRecords", is(1)).
 			body("results", hasSize(1)).
-			body("results[0].categoryTags", hasSize(1)).
-			body("results[0].categoryTags[0].name", is("baseline"));
+			body("results[0].categoryTags", hasSize(2)).
+			body("results[0].categoryTags.name", containsInAnyOrder("baseline", "chemical stimulus"));
 	}
 
 	@Test
