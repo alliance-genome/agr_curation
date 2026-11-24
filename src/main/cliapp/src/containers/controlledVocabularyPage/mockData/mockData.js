@@ -25,26 +25,6 @@ export const data = {
 	returnedRecords: 1,
 };
 
-export const termData = {
-	generic_boolean_terms: {
-		id: 23323,
-		name: 'generic_boolean_terms',
-		displayName: 'generic_boolean_terms',
-		terms: [
-			{
-				id: 213423,
-				name: true,
-				text: 'true',
-			},
-			{
-				id: 3428828,
-				name: false,
-				text: 'false',
-			},
-		],
-	},
-};
-
 export const vocabularyData = {
 	results: [
 		{

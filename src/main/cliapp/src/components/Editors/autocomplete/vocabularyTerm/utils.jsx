@@ -1,5 +1,3 @@
-import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/utils';
-import { SearchService } from '../../../../service/SearchService';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { VocabTermAutocompleteTemplate } from '../base/templates/VocabTermAutocompleteTemplate';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
@@ -18,10 +16,14 @@ export const memberTermsSearchConfig = {
 	),
 };
 
-// Helper builds the vocabulary-scoping filter from a plain vocabulary name.
-// Callers supply otherFilters because the scoping value depends on the row's
-// current state — keeping it out of the config keeps utils free of
-// PrimeReact/editorOptions knowledge.
+/**
+ * The filter that limits a term search to one vocabulary. Callers add it to the member terms config themselves,
+ * because the vocabulary is the one chosen on screen: the term set row being edited, or the New Vocabulary Term Set
+ * form's vocabulary.
+ *
+ * @param {string} vocabularyName - the vocabulary's name
+ * @returns {object} `otherFilters` for the member terms search
+ */
 export const buildMemberTermsOtherFilters = (vocabularyName) => ({
 	vocabularyFilter: {
 		'vocabulary.name': { queryString: vocabularyName },
@@ -46,18 +48,4 @@ export const functionalImpactsSearchConfig = {
 			query={query}
 		/>
 	),
-};
-
-export const memberTermsSearch = (event, setFiltered, setInputValue, otherFilters) => {
-	const searchService = new SearchService();
-	setInputValue(event.query);
-	const filter = buildAutocompleteFilter(event, memberTermsSearchConfig.autocompleteFields);
-	autocompleteSearch(
-		searchService,
-		memberTermsSearchConfig.endpoint,
-		memberTermsSearchConfig.filterName,
-		filter,
-		setFiltered,
-		otherFilters
-	);
 };

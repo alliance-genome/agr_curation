@@ -3,26 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { SearchService } from './SearchService';
 import { Endpoints } from '../constants/Endpoints';
 
-const TERM_DATA = {
-	generic_boolean_terms: {
-		id: 23323,
-		name: 'generic_boolean_terms',
-		displayName: 'generic_boolean_terms',
-		terms: [
-			{
-				id: 213423,
-				name: true,
-				text: 'true',
-			},
-			{
-				id: 3428828,
-				name: false,
-				text: 'false',
-			},
-		],
-	},
-};
-
 export function useControlledVocabularyService(vocabularyLabel) {
 	const [terms, setTerms] = useState();
 	const searchService = new SearchService();
@@ -38,13 +18,9 @@ export function useControlledVocabularyService(vocabularyLabel) {
 
 	useEffect(() => {
 		if (isSuccess && data) {
-			if (vocabularyLabel === 'generic_boolean_terms') {
-				setTerms(TERM_DATA[vocabularyLabel]);
-			} else {
-				setTerms(data.results);
-			}
+			setTerms(data.results);
 		}
-	}, [data, isSuccess, vocabularyLabel]);
+	}, [data, isSuccess]);
 
 	return terms;
 }

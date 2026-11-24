@@ -2,12 +2,12 @@ import { InputText } from 'primereact/inputtext';
 import React from 'react';
 import { CronFields } from '../../components/CronFields';
 
-export const FMSForm = ({ hideFMS, newBulkLoad, onChange, disableFormFields }) => {
+export const FMSForm = ({ hideFMS, newBulkLoad, onChange, onScheduleActiveChange, disableFormFields }) => {
 	return (
 		<>
 			{!hideFMS.current && (
 				<>
-					<CronFields newItem={newBulkLoad} onChange={onChange} />
+					<CronFields newItem={newBulkLoad} onChange={onChange} onScheduleActiveChange={onScheduleActiveChange} />
 					<div className="field">
 						<label htmlFor="fmsDataType">FMS Data Type</label>
 						<InputText
