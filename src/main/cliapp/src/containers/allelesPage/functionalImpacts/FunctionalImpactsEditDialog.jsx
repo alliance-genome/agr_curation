@@ -17,6 +17,7 @@ import { PhenotypeTermTableEditor } from '../../../components/Editors/autocomple
 import { InputTextAreaTableEditor } from '../../../components/Editors/text/InputTextAreaTableEditor';
 import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
 import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { markPendingEdits } from '../../../utils/pendingEdits';
 
 /**
  * Dialog for editing a main-table row's functional impacts. Edits stay local until Keep Edits
@@ -115,14 +116,7 @@ export const FunctionalImpactsEditDialog = ({
 			mainRowProps.editorCallback(_localFunctionalImpacts);
 		}
 
-		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
-		let messageObject = {
-			severity: 'warn',
-			message: 'Pending Edits!',
-		};
-		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]['alleleFunctionalImpacts'] = messageObject;
-		setErrorMessagesMainRow({ ...errorMessagesCopy });
+		setErrorMessagesMainRow(markPendingEdits(errorMessagesMainRow, rowIndex, 'alleleFunctionalImpacts'));
 
 		setOriginalFunctionalImpactsData((originalFunctionalImpactsData) => {
 			return {

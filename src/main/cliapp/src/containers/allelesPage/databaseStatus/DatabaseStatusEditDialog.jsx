@@ -16,6 +16,7 @@ import { useControlledVocabularyService } from '../../../service/useControlledVo
 import { ControlledVocabularyTableEditor } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
 import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
+import { markPendingEdits } from '../../../utils/pendingEdits';
 
 /**
  * Dialog for editing a main-table row's database status. Edits stay local until Keep Edits validates the status
@@ -117,14 +118,7 @@ export const DatabaseStatusEditDialog = ({
 			mainRowProps.editorCallback(_localDatabaseStatuses[0] || null);
 		}
 
-		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
-		let messageObject = {
-			severity: 'warn',
-			message: 'Pending Edits!',
-		};
-		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]['alleleDatabaseStatus'] = messageObject;
-		setErrorMessagesMainRow({ ...errorMessagesCopy });
+		setErrorMessagesMainRow(markPendingEdits(errorMessagesMainRow, rowIndex, 'alleleDatabaseStatus'));
 
 		setOriginalDatabaseStatusData((originalDatabaseStatusData) => {
 			return {

@@ -16,6 +16,7 @@ import { useLocalRowsStrategy } from '../../../components/Editors/fields/strateg
 import { ControlledVocabularyTableEditor } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
 import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
 import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { markPendingEdits } from '../../../utils/pendingEdits';
 
 /**
  * Dialog for editing a main-table row's nomenclature events. Edits stay local until Keep Edits
@@ -116,14 +117,7 @@ export const NomenclatureEventsEditDialog = ({
 			mainRowProps.editorCallback(_localNomenclatureEvents);
 		}
 
-		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
-		let messageObject = {
-			severity: 'warn',
-			message: 'Pending Edits!',
-		};
-		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]['alleleNomenclatureEvents'] = messageObject;
-		setErrorMessagesMainRow({ ...errorMessagesCopy });
+		setErrorMessagesMainRow(markPendingEdits(errorMessagesMainRow, rowIndex, 'alleleNomenclatureEvents'));
 
 		setOriginalNomenclatureEventsData((originalNomenclatureEventsData) => {
 			return {

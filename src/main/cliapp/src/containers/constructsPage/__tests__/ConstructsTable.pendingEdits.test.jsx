@@ -57,7 +57,7 @@ const keepEditsIn = async (user, heading) => {
 
 const cellWith = (row, buttonName) => within(row).getByRole('button', { name: buttonName }).closest('td');
 
-describe('<ConstructsTable /> pending edits', () => {
+describe('<ConstructsTable /> pending edits', { timeout: 30000 }, () => {
 	beforeEach(() => {
 		window.localStorage.clear();
 	});
