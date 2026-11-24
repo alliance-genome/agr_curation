@@ -4,7 +4,14 @@ import { CronFields } from '../../components/CronFields';
 import { Dropdown } from 'primereact/dropdown';
 import { DataLoadService } from '../../service/DataLoadService';
 
-export const URLForm = ({ hideURL, hideOntology, newBulkLoad, onChange, disableFormFields }) => {
+export const URLForm = ({
+	hideURL,
+	hideOntology,
+	newBulkLoad,
+	onChange,
+	onScheduleActiveChange,
+	disableFormFields,
+}) => {
 	const dataLoadService = new DataLoadService();
 
 	const ontologyTypes = dataLoadService.getOntologyTypes();
@@ -27,7 +34,7 @@ export const URLForm = ({ hideURL, hideOntology, newBulkLoad, onChange, disableF
 							/>
 						</div>
 					)}
-					<CronFields newItem={newBulkLoad} onChange={onChange} />
+					<CronFields newItem={newBulkLoad} onChange={onChange} onScheduleActiveChange={onScheduleActiveChange} />
 					<div className="field">
 						<label htmlFor="bulkloadUrl">URL</label>
 						<InputText name="bulkloadUrl" value={newBulkLoad.bulkloadUrl} onChange={onChange} placeholder="Enter URL" />

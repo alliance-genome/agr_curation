@@ -71,7 +71,7 @@ export const NewBulkLoadForm = ({
 	};
 
 	const onChange = (e) => {
-		if (e.target.name === 'scheduleActive' || e.target.name === 'group') {
+		if (e.target.name === 'group') {
 			bulkLoadDispatch({
 				field: e.target.name,
 				value: e.value,
@@ -83,6 +83,8 @@ export const NewBulkLoadForm = ({
 			});
 		}
 	};
+
+	const onScheduleActiveChange = (value) => bulkLoadDispatch({ field: 'scheduleActive', value });
 
 	const getService = () => {
 		if (!dataLoadService) {
@@ -193,6 +195,7 @@ export const NewBulkLoadForm = ({
 							hideFMS={hideFMS}
 							newBulkLoad={newBulkLoad}
 							onChange={onChange}
+							onScheduleActiveChange={onScheduleActiveChange}
 							disableFormFields={disableFormFields}
 						/>
 
@@ -201,6 +204,7 @@ export const NewBulkLoadForm = ({
 							hideOntology={hideOntology}
 							newBulkLoad={newBulkLoad}
 							onChange={onChange}
+							onScheduleActiveChange={onScheduleActiveChange}
 							disableFormFields={disableFormFields}
 						/>
 

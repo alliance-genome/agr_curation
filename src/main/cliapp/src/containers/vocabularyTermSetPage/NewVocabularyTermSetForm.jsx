@@ -12,9 +12,9 @@ import { MultiAutocomplete } from '../../components/Editors/widgets/MultiAutocom
 import { vocabularySearch, vocabularySearchConfig } from '../../components/Editors/autocomplete/vocabulary/utils';
 import {
 	buildMemberTermsOtherFilters,
-	memberTermsSearch,
 	memberTermsSearchConfig,
 } from '../../components/Editors/autocomplete/vocabularyTerm/utils';
+import { buildSearchFn } from '../../components/Editors/autocomplete/base/buildSearchFn';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 /**
@@ -85,8 +85,10 @@ export const NewVocabularyTermSetForm = ({
 		});
 	};
 
-	const searchVocabularyTerms = (event, setSuggestions, setQuery) =>
-		memberTermsSearch(event, setSuggestions, setQuery, buildMemberTermsOtherFilters(vocabulary?.name));
+	const searchVocabularyTerms = buildSearchFn({
+		...memberTermsSearchConfig,
+		otherFilters: () => buildMemberTermsOtherFilters(vocabulary?.name),
+	});
 
 	const fieldProps = (field) => ({
 		name: field,

@@ -1,5 +1,4 @@
-import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/utils';
-import { SearchService } from '../../../../service/SearchService';
+import { buildSearchFn } from '../base/buildSearchFn';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
 
@@ -9,15 +8,4 @@ export const variantTypeSearchConfig = {
 	filterName: 'variantTypeFilter',
 };
 
-export const variantTypeSearch = (event, setFiltered, setQuery) => {
-	const searchService = new SearchService();
-	setQuery(event.query);
-	const filter = buildAutocompleteFilter(event, variantTypeSearchConfig.autocompleteFields);
-	autocompleteSearch(
-		searchService,
-		variantTypeSearchConfig.endpoint,
-		variantTypeSearchConfig.filterName,
-		filter,
-		setFiltered
-	);
-};
+export const variantTypeSearch = buildSearchFn(variantTypeSearchConfig);

@@ -1,11 +1,17 @@
 import React, { useRef } from 'react';
-import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
-import { useControlledVocabularyService } from '../service/useControlledVocabularyService';
+import { BooleanSelect } from './Editors/widgets/BooleanSelect';
 import { OverlayPanel } from 'primereact/overlaypanel';
 
-export const CronFields = ({ newItem, onChange }) => {
-	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
+/**
+ * The Scheduled and Cron Schedule fields of a data load or report form.
+ *
+ * @param {object} newItem - the data load or report being created
+ * @param {Function} onChange - called with the Cron Schedule input's change event
+ * @param {(value: boolean) => void} onScheduleActiveChange - called with the value chosen for Scheduled
+ * @returns {JSX.Element}
+ */
+export const CronFields = ({ newItem, onChange, onScheduleActiveChange }) => {
 	const op = useRef(null);
 
 	return (
@@ -13,16 +19,12 @@ export const CronFields = ({ newItem, onChange }) => {
 			<>
 				<div className="field">
 					<label htmlFor="scheduled">Scheduled</label>
-					<Dropdown
+					<BooleanSelect
 						id="scheduled"
-						options={booleanTerms?.terms || []}
 						value={newItem.scheduleActive}
-						onChange={onChange}
-						placeholder={'Select if Scheduled'}
-						className="p-col-12"
-						name="scheduleActive"
-						optionLabel="text"
-						optionValue="name"
+						onChange={onScheduleActiveChange}
+						placeholder="Select if Scheduled"
+						name="Scheduled"
 					/>
 				</div>
 				<div className="field">

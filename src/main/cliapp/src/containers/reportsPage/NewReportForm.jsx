@@ -114,7 +114,11 @@ export const NewReportForm = ({
 							/>
 						</div>
 
-						<CronFields newItem={newReport} onChange={onChange} />
+						<CronFields
+							newItem={newReport}
+							onChange={onChange}
+							onScheduleActiveChange={(value) => reportDispatch({ field: 'scheduleActive', value })}
+						/>
 					</form>
 				</div>
 			</ErrorBoundary>
