@@ -17,6 +17,7 @@ import { ControlledVocabularyTableEditor } from './Editors/dropdown/vocabulary/C
 import { InputTextAreaTableEditor } from './Editors/text/InputTextAreaTableEditor';
 import { ReferencesTableEditor } from './Editors/autocomplete/references/ReferencesTableEditor';
 import { BooleanTableEditor } from './Editors/dropdown/boolean/BooleanTableEditor';
+import { markPendingEdits } from '../utils/pendingEdits';
 
 /**
  * Dialog for editing a table row's related notes. Edits stay local until Keep Edits validates every note, hands
@@ -138,16 +139,7 @@ export const RelatedNotesEditDialog = ({
 			mainRowProps.editorCallback(_localRelatedNotes);
 		}
 
-		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
-		const errorRowKey = rowKey ?? rowIndex;
-		errorMessagesCopy[errorRowKey] = {
-			...errorMessagesCopy[errorRowKey],
-			[pendingEditsField]: {
-				severity: 'warn',
-				message: 'Pending Edits!',
-			},
-		};
-		setErrorMessagesMainRow(errorMessagesCopy);
+		setErrorMessagesMainRow(markPendingEdits(errorMessagesMainRow, rowKey ?? rowIndex, pendingEditsField));
 
 		setOriginalRelatedNotesData((originalRelatedNotesData) => {
 			return {
