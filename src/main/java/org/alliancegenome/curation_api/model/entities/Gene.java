@@ -165,7 +165,7 @@ public class Gene extends GenomicEntity {
 	)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(mappedBy = "geneAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.VariantSummaryDocument.class })
 	private List<GeneGenomicLocationAssociation> geneGenomicLocationAssociations;
 
 
