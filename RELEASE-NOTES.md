@@ -2,6 +2,10 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.55.1
+* Fixes and maintenance
+   * Delete the 37,635 WB cassettes made by the construct-to-cassette migration that WB has since submitted under the same identifier, so the WB Construct and Construct Association loads run again (SCRUM-6890)
+
 ## v0.55.0
 * New features:
    * Create, copy, delete and deprecate genes, with an editable gene detail page (SCRUM-6366, SCRUM-6367, SCRUM-6782, SCRUM-6783)
