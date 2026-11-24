@@ -99,8 +99,10 @@ public class MatiService {
 		// Log the range BEFORE returning so an operator can reconcile if the
 		// caller crashes between this method returning and the curies being
 		// persisted. The MaTI sequence has already advanced — these curies are
-		// burned regardless of what happens next.
-		log.info("Minted MaTI range subdomain={} code={} first={} last={} n={}",
+		// burned regardless of what happens next. Logged at DEBUG: loads mint one
+		// curie per record, which flooded the production log at INFO. To see the
+		// ranges, set quarkus.log.category."org.alliancegenome.curation_api.services.MatiService".level=DEBUG
+		log.debug("Minted MaTI range subdomain={} code={} first={} last={} n={}",
 			subdomain, code, firstCtr, lastCtr, n);
 
 		List<String> curies = new ArrayList<>(n);
