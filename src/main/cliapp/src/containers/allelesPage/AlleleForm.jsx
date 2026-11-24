@@ -20,6 +20,7 @@ import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneA
 import { CrossReferencesForm } from '../../components/crossReferences/CrossReferencesForm';
 import { FormSection } from '../../components/FormFieldVisibility';
 import { getEffectiveModAbbreviation } from '../../utils/affiliation';
+import { DETAIL_FIELD_LAYOUT } from '../../components/Editors/fields/fieldLayouts';
 
 // The sections create mode does not render, so its menu does not offer them.
 const FIELDS_OMITTED_ON_CREATE = [
@@ -70,10 +71,6 @@ const FIELDS_REQUIRED_ON_CREATE = ['Symbol', 'Taxon'];
 export const ALLELE_CREATE_TOGGLEABLE_FIELDS = ALLELE_DETAIL_TOGGLEABLE_FIELDS.filter(
 	(field) => !FIELDS_OMITTED_ON_CREATE.includes(field) && !FIELDS_REQUIRED_ON_CREATE.includes(field)
 );
-
-const labelColumnSize = 'col-3';
-const widgetColumnSize = 'col-4';
-const fieldDetailsColumnSize = 'col-5';
 
 /**
  * The allele field sections, in display order.
@@ -134,22 +131,14 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 	return (
 		<form className="mt-8">
 			<FormSection isVisible={!isCreate && isVisible('Curie')}>
-				<IdentifierDetailPageTemplate
-					identifier={state.allele?.curie}
-					label="Curie"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				<IdentifierDetailPageTemplate identifier={state.allele?.curie} label="Curie" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Primary External ID')}>
 				<IdentifierDetailPageTemplate
 					identifier={state.allele?.primaryExternalId}
 					label="Primary External ID"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
@@ -157,9 +146,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 				<IdentifierDetailPageTemplate
 					identifier={state.allele?.modInternalId}
 					label="MOD Internal ID"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
@@ -208,9 +195,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 					required={isCreate}
 					isPending={pendingFields?.has('taxon')}
 					onChange={onTaxonValueChange}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 				/>
 			</FormSection>
@@ -248,9 +233,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 					inCollection={state.allele?.inCollection}
 					onChange={onInCollectionValueChange}
 					isPending={pendingFields?.has('inCollection')}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 				/>
 			</FormSection>
@@ -262,9 +245,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 					isPending={pendingFields?.has('isExtinct')}
 					label={'Is Extinct'}
 					onChange={onIsExtinctValueChange}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 					showClear={true}
 				/>
@@ -281,9 +262,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			<FormSection isVisible={isVisible('Data Provider')}>
 				<DataProviderDetailPageTemplate
 					dataProvider={isCreate ? getEffectiveModAbbreviation() : state.allele?.dataProvider?.abbreviation}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
@@ -295,40 +274,24 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 				<UserDetailPageTemplate
 					user={state.allele?.updatedBy?.uniqueId}
 					fieldName="Updated By"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Date Updated')}>
-				<DateDetailPageTemplate
-					date={state.allele?.dateUpdated}
-					fieldName="Date Updated"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				<DateDetailPageTemplate date={state.allele?.dateUpdated} fieldName="Date Updated" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Created By')}>
 				<UserDetailPageTemplate
 					user={state.allele?.createdBy?.uniqueId}
 					fieldName="Created By"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Date Created')}>
-				<DateDetailPageTemplate
-					date={state.allele?.dateCreated}
-					fieldName="Date Created"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				<DateDetailPageTemplate date={state.allele?.dateCreated} fieldName="Date Created" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Internal')}>
@@ -338,9 +301,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 					isPending={pendingFields?.has('internal')}
 					label={'Internal'}
 					onChange={onInternalValueChange}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 				/>
 			</FormSection>
@@ -352,9 +313,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 					isPending={pendingFields?.has('obsolete')}
 					label={'Obsolete'}
 					onChange={onObsoleteValueChange}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 				/>
 			</FormSection>
