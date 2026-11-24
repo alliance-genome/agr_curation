@@ -5,6 +5,7 @@ https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 ## v0.55.1
 * Fixes and maintenance
    * Delete the 37,635 WB cassettes made by the construct-to-cassette migration that WB has since submitted under the same identifier, so the WB Construct and Construct Association loads run again (SCRUM-6890)
+   * Log minted MaTI curie ranges at DEBUG instead of INFO, as loads mint one curie per record
 
 ## v0.55.0
 * New features:
