@@ -19,16 +19,20 @@ import { ReferencesTableEditor } from './Editors/autocomplete/references/Referen
 import { BooleanTableEditor } from './Editors/dropdown/boolean/BooleanTableEditor';
 
 /**
- * Dialog for editing a main-table row's related notes. Edits stay local until Keep Edits validates every note
- * and hands the list back through the row's editor callback.
+ * Dialog for editing a table row's related notes. Edits stay local until Keep Edits validates every note, hands
+ * the list back through the row's editor callback and marks the row as having pending edits.
  *
- * @param {object} originalRelatedNotesData - the row's notes, dialog visibility, row index and PrimeReact editor
- *   options
+ * @param {object} originalRelatedNotesData - the row's notes, dialog visibility, row index, PrimeReact editor
+ *   options and, for tables whose errors are keyed by row key, the row's `rowKey`
  * @param {Function} setOriginalRelatedNotesData - its setter
- * @param {object} errorMessagesMainRow - the main table's errors, keyed by row index
+ * @param {object} errorMessagesMainRow - the table's errors, keyed by `rowKey` when given, otherwise by row index
  * @param {Function} setErrorMessagesMainRow - its setter
  * @param {string} noteTypeVocabularyTermSet - the term set the note types come from
  * @param {boolean} [showReferences=true] - whether to offer the references column
+ * @param {boolean} [singleValue=false] - whether the row holds at most one note; a row with none opens with a new
+ *   note
+ * @param {string} [defaultNoteType] - the name of the note type a new note starts with
+ * @param {string} [pendingEditsField='relatedNotes'] - the row field the pending edits mark is shown under
  * @returns {JSX.Element}
  */
 export const RelatedNotesEditDialog = ({
@@ -38,8 +42,11 @@ export const RelatedNotesEditDialog = ({
 	setErrorMessagesMainRow,
 	noteTypeVocabularyTermSet,
 	showReferences = true,
+	singleValue = false,
+	defaultNoteType,
+	pendingEditsField = 'relatedNotes',
 }) => {
-	const { originalRelatedNotes, isInEdit, dialog, rowIndex, mainRowProps } = originalRelatedNotesData;
+	const { originalRelatedNotes, isInEdit, dialog, rowIndex, rowKey, mainRowProps } = originalRelatedNotesData;
 	const [localRelatedNotes, setLocalRelatedNotes] = useState(null);
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState({});
@@ -82,29 +89,30 @@ export const RelatedNotesEditDialog = ({
 		setLocalRelatedNotes([]);
 	};
 
+	const buildNewNote = () => ({
+		dataKey: dataKeyCounter.current++,
+		noteType: {
+			name: defaultNoteType ?? '',
+		},
+		internal: false,
+	});
+
 	const cloneNotes = (clonableNotes) => {
-		let _clonableNotes = structuredClone(clonableNotes);
-		if (_clonableNotes) {
-			_clonableNotes.forEach((note) => {
-				note.dataKey = dataKeyCounter.current++;
-			});
-		} else {
-			_clonableNotes = [];
+		if (!clonableNotes?.length) {
+			return singleValue ? [buildNewNote()] : [];
 		}
+		const _clonableNotes = structuredClone(clonableNotes);
+		_clonableNotes.forEach((note) => {
+			note.dataKey = dataKeyCounter.current++;
+		});
 		return _clonableNotes;
 	};
 
 	const createNewNoteHandler = () => {
-		const newKey = dataKeyCounter.current++;
+		const newNote = buildNewNote();
 		const _localRelatedNotes = structuredClone(localRelatedNotes);
-		_localRelatedNotes.push({
-			dataKey: newKey,
-			noteType: {
-				name: '',
-			},
-			internal: false,
-		});
-		let _editingRows = { ...editingRows, ...{ [`${newKey}`]: true } };
+		_localRelatedNotes.push(newNote);
+		let _editingRows = { ...editingRows, ...{ [`${newNote.dataKey}`]: true } };
 		setEditingRows(_editingRows);
 		setLocalRelatedNotes(_localRelatedNotes);
 	};
@@ -113,6 +121,11 @@ export const RelatedNotesEditDialog = ({
 		let _localRelatedNotes = structuredClone(localRelatedNotes);
 		_localRelatedNotes = _localRelatedNotes.filter((note) => note.dataKey !== dataKey);
 		setLocalRelatedNotes(_localRelatedNotes);
+		setErrorMessages((previous) => {
+			const remaining = { ...previous };
+			delete remaining[dataKey];
+			return remaining;
+		});
 	};
 
 	const saveDataHandler = () => {
@@ -126,13 +139,15 @@ export const RelatedNotesEditDialog = ({
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
-		let messageObject = {
-			severity: 'warn',
-			message: 'Pending Edits!',
+		const errorRowKey = rowKey ?? rowIndex;
+		errorMessagesCopy[errorRowKey] = {
+			...errorMessagesCopy[errorRowKey],
+			[pendingEditsField]: {
+				severity: 'warn',
+				message: 'Pending Edits!',
+			},
 		};
-		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]['relatedNotes'] = messageObject;
-		setErrorMessagesMainRow({ ...errorMessagesCopy });
+		setErrorMessagesMainRow(errorMessagesCopy);
 
 		setOriginalRelatedNotesData((originalRelatedNotesData) => {
 			return {
@@ -207,7 +222,12 @@ export const RelatedNotesEditDialog = ({
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-				<Button label="New Note" icon="pi pi-plus" onClick={createNewNoteHandler} />
+				<Button
+					label="New Note"
+					icon="pi pi-plus"
+					onClick={createNewNoteHandler}
+					disabled={singleValue && localRelatedNotes?.length > 0}
+				/>
 				<Button
 					label="Keep Edits"
 					icon={isValidating ? 'pi pi-spin pi-spinner' : 'pi pi-check'}
