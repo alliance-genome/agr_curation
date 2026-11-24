@@ -6,6 +6,7 @@ import { TaxonTableEditor } from '../../../components/Editors/autocomplete/taxon
 import { InputTextTableEditor } from '../../../components/Editors/text/InputTextTableEditor';
 import { DialogTriggerTableEditor } from '../../../components/Editors/dialog/DialogTriggerTableEditor';
 import { alleleGeneObjectSearchConfig } from '../../../components/Editors/autocomplete/gene/utils';
+import { ontologyTermLabel } from '../../../components/Editors/autocomplete/ontology/utils';
 import { Endpoints } from '../../../constants/Endpoints';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../constants/FilterFields';
 import { genomicEntityLabel, identifierOf, transgenicToolDisplayValue } from '../utils';
@@ -99,10 +100,14 @@ const strSearchConfig = {
 	valueDisplay: entityValueDisplay(strLabel),
 };
 
+// SCRUM-6895: each chosen SO term shows as its name and curie, e.g. "promoter (SO:0000167)", as in the other ontology
+// term editors. The rows of the pop-up and of the detail page section are always in edit mode, so this is also how
+// the saved component types, the loaded ones included, are shown.
 const componentTypeSearchConfig = {
 	endpoint: Endpoints.Ontology.SO,
 	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.ontologyTermAutocompleteConfig),
 	filterName: 'componentTypesFilter',
+	selectedItemTemplate: ontologyTermLabel,
 };
 
 export const FREE_TEXT_COMPONENTS = {

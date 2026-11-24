@@ -2,25 +2,55 @@ import React, { useRef } from 'react';
 import { ConditionRelationService } from '../../service/ConditionRelationService';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
-import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AutocompleteEditor } from '../../components/Editors/autocomplete/base/AutocompleteEditor';
-import { LiteratureAutocompleteTemplate } from '../../components/Editors/autocomplete/base/templates/LiteratureAutocompleteTemplate';
-import { ExConAutocompleteTemplate } from '../../components/Editors/autocomplete/base/templates/ExConAutocompleteTemplate';
-import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
-import { classNames } from 'primereact/utils';
-import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
-import { Endpoints } from '../../constants/Endpoints';
-import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../constants/FilterFields';
-import { AutocompleteMultiEditor } from '../../components/Editors/autocomplete/base/AutocompleteMultiEditor';
+import { FormField } from '../../components/Editors/fields/FormField';
+import { DIALOG_FIELD_LAYOUT } from '../../components/Editors/fields/dialogFieldLayout';
+import { TextInput } from '../../components/Editors/widgets/TextInput';
+import { SingleAutocomplete } from '../../components/Editors/widgets/SingleAutocomplete';
+import { MultiAutocomplete } from '../../components/Editors/widgets/MultiAutocomplete';
+import { VocabularySelect } from '../../components/Editors/widgets/VocabularySelect';
+import {
+	isPickedReference,
+	singleReferenceSearch,
+	singleReferenceSearchConfig,
+} from '../../components/Editors/autocomplete/references/utils';
+import {
+	conditionsSearch,
+	conditionsSearchConfig,
+} from '../../components/Editors/autocomplete/experimentalCondition/utils';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
+/**
+ * Why the reference can't be sent: none given, or text typed without picking a reference from the suggestions, which
+ * the server can't read as a reference.
+ *
+ * @param {object|null} reference - the Reference field's value
+ * @returns {string|null} the message to show beside Reference, or null when a picked reference is held
+ */
+const findReferenceError = (reference) => {
+	if (!reference?.curie?.trim()) return 'Reference is required.';
+	if (!isPickedReference(reference)) return 'Must select reference from dropdown';
+	return null;
+};
+
+/**
+ * The New Relation dialog on the Condition Relations table: handle, reference, relation type and conditions. Save
+ * with no reference, or with reference text that was not picked from the suggestions, says so beside Reference and
+ * sends nothing; otherwise it creates the relation, and a rejected save shows each field's error beside it.
+ *
+ * @param {object} newRelationState - the form's reducer state: `newRelation`, `errorMessages`, `submitted`,
+ *   `newRelationDialog`
+ * @param {Function} newRelationDispatch - the form's reducer dispatch
+ * @param {object} [conditionRelationService] - the service that creates the relation
+ * @param {object[]} conditionRelationTypeTerms - the `condition_relation` terms offered as the relation type
+ * @param {(relation: object, queryClient: object) => void} setNewConditionRelation - called with the created
+ *   relation
+ * @returns {JSX.Element}
+ */
 export const NewRelationForm = ({
 	newRelationState,
 	newRelationDispatch,
-	searchService,
 	conditionRelationService,
 	conditionRelationTypeTerms,
 	setNewConditionRelation,
@@ -29,6 +59,8 @@ export const NewRelationForm = ({
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
 	const { newRelation, errorMessages, submitted, newRelationDialog } = newRelationState;
+	const referenceError = findReferenceError(newRelation.singleReference);
+	const errors = submitted && referenceError ? { ...errorMessages, singleReference: referenceError } : errorMessages;
 
 	const hideDialog = () => {
 		newRelationDispatch({ type: 'RESET' });
@@ -46,11 +78,10 @@ export const NewRelationForm = ({
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		newRelationDispatch({ type: 'SUBMIT' });
+		if (referenceError) return;
 		mutation.mutate(newRelation, {
 			onSuccess: (data) => {
-				//TODO: check this data object
 				setNewConditionRelation(data.data.entity, queryClient);
-				console.log('NewRelationForm data', data);
 				toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Relation Added' });
 				newRelationDispatch({ type: 'RESET' });
 			},
@@ -67,58 +98,13 @@ export const NewRelationForm = ({
 		});
 	};
 
-	const onHandleChange = (event) => {
-		newRelationDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.target.value,
-		});
-	};
-
-	const onRelationChange = (event) => {
-		const name = event.value;
-		newRelationDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: { name },
-		});
-	};
-
-	const onReferenceChange = (event, setFieldValue) => {
-		setFieldValue(event.target.value);
-		newRelationDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.target.value,
-		});
-	};
-
-	const referenceSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.referenceAutocompleteConfig);
-		const endpoint = Endpoints.Document.LITERATURE_REFERENCE;
-		const filterName = 'curieFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const onConditionsChange = (event, setFieldValue) => {
-		setFieldValue(event.target.value);
-		newRelationDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.target.value,
-		});
-	};
-
-	const conditionSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.experimentalConditionAutocompleteConfig);
-		const endpoint = Endpoints.Annotation.EXPERIMENTAL_CONDITION;
-		const filterName = 'experimentalConditionFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
+	const fieldProps = (field) => ({
+		name: field,
+		value: newRelation[field],
+		onChange: (value) => newRelationDispatch({ type: 'EDIT', field, value }),
+		errors,
+		...DIALOG_FIELD_LAYOUT,
+	});
 
 	const dialogFooter = (
 		<>
@@ -141,79 +127,40 @@ export const NewRelationForm = ({
 				onHide={hideDialog}
 			>
 				<ErrorBoundary>
-					<div className="p-justify-center">
-						<form>
-							<div className="field">
-								<label htmlFor="handle">Handle</label>
-								<InputText
-									id="handle"
-									name="handle"
-									value={newRelation.handle}
-									onChange={onHandleChange}
-									className={classNames({ 'p-invalid': submitted && errorMessages.handle })}
+					<form>
+						<FormField label="Handle" {...fieldProps('handle')}>
+							{(binding) => <TextInput {...binding} />}
+						</FormField>
+						<FormField label="Reference" required {...fieldProps('singleReference')}>
+							{(binding) => (
+								<SingleAutocomplete
+									{...binding}
+									search={singleReferenceSearch}
+									valueDisplay={singleReferenceSearchConfig.valueDisplay}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'handle'} />
-							</div>
-							<div className="field">
-								<label htmlFor="singleReference">
-									<font color={'red'}>*</font>Reference
-								</label>
-								<AutocompleteEditor
-									search={referenceSearch}
-									name="singleReference"
-									label="Reference"
-									fieldName="singleReference"
-									initialValue={newRelation.singleReference}
-									onValueChangeHandler={onReferenceChange}
-									classNames={classNames({ 'p-invalid': submitted && errorMessages.singleReference })}
-									valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-										<LiteratureAutocompleteTemplate
-											item={item}
-											setAutocompleteHoverItem={setAutocompleteHoverItem}
-											op={op}
-											query={query}
-										/>
-									)}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'singleReference'} />
-							</div>
-							<div className="field">
-								<label htmlFor="relation">Relation</label>
-								<Dropdown
+							)}
+						</FormField>
+						<FormField label="Relation" {...fieldProps('conditionRelationType')}>
+							{(binding) => (
+								<VocabularySelect
+									{...binding}
 									options={conditionRelationTypeTerms}
-									value={newRelation.conditionRelationType.name}
-									placeholder={'Select Relation'}
-									name="conditionRelationType"
-									optionLabel="name"
-									optionValue="name"
-									onChange={onRelationChange}
-									required
-									className={classNames({ 'p-invalid': submitted && errorMessages.conditionRelationType })}
+									dataKey="name"
+									placeholder="Select Relation"
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'conditionRelationType'} />
-							</div>
-							<div className="field">
-								<label htmlFor="conditions">Conditions</label>
-								<AutocompleteMultiEditor
-									search={conditionSearch}
-									initialValue={newRelation.conditions}
-									fieldName="conditions"
+							)}
+						</FormField>
+						<FormField label="Conditions" {...fieldProps('conditions')}>
+							{(binding) => (
+								<MultiAutocomplete
+									{...binding}
+									search={conditionsSearch}
 									subField="conditionSummary"
-									name="conditions"
-									valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-										<ExConAutocompleteTemplate
-											item={item}
-											setAutocompleteHoverItem={setAutocompleteHoverItem}
-											op={op}
-											query={query}
-										/>
-									)}
-									onValueChangeHandler={onConditionsChange}
+									valueDisplay={conditionsSearchConfig.valueDisplay}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'conditions'} />
-							</div>
-						</form>
-					</div>
+							)}
+						</FormField>
+					</form>
 				</ErrorBoundary>
 			</Dialog>
 		</div>

@@ -60,9 +60,6 @@ export const HTPExpressionDatasetSampleAnnotationsTable = ({
 
 	const searchService = new SearchService();
 
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
-
 	const handleExpressionSampleOpen = (entities) =>
 		setExpressionSampleData({ originalEntities: entities, dialog: true });
 	const handleSampleAgeOpen = (entities) => setSampleAgeData({ originalEntities: entities, dialog: true });
@@ -318,7 +315,9 @@ export const HTPExpressionDatasetSampleAnnotationsTable = ({
 					setTableState={setTableState}
 					columns={columns}
 					isEditable={false}
-					hasDetails={false}
+					hasDetails={true}
+					detailsEndpoint="htp-expression-dataset-sample"
+					getDetailsIdentifier={(rowData) => rowData.curie || rowData.id?.toString()}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					toasts={{ toast_topleft, toast_topright }}

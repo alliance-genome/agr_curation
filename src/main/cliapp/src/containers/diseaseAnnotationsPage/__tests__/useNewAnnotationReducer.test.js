@@ -37,6 +37,18 @@ describe('useNewAnnotationReducer', () => {
 		expect(new Set(keys).size).toBe(2);
 	});
 
+	it('sets the chosen experiment as the only condition relation, and clearing it removes the relation', () => {
+		const { result } = setUp();
+		const experiment = { id: 40, handle: 'heat_shock', conditions: [] };
+		const relations = () => result.current.newAnnotationState.newAnnotation.conditionRelations;
+
+		dispatch(result, { type: 'EDIT_EXPERIMENT', value: experiment });
+		expect(relations()).toEqual([experiment]);
+
+		dispatch(result, { type: 'EDIT_EXPERIMENT', value: null });
+		expect(relations()).toEqual([]);
+	});
+
 	it('edits and deletes a row by its key', () => {
 		const { result } = setUp();
 		dispatch(result, { type: 'ADD_NEW_NOTE' });

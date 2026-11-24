@@ -1,5 +1,5 @@
-import { buildAutocompleteFilter, autocompleteSearch, getIdentifier } from '../../../../utils/utils';
-import { SearchService } from '../../../../service/SearchService';
+import { buildSearchFn } from '../base/buildSearchFn';
+import { getIdentifier } from '../../../../utils/utils';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { EvidenceAutocompleteTemplate } from '../base/templates/EvidenceAutocompleteTemplate';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
@@ -15,13 +15,28 @@ export const mutationTypesSearchConfig = {
 };
 
 /**
- * Token label for a mutation type. Matches the suggestion list, so a term reads the same
+ * Token label for an ontology term. Matches the suggestion list, so a term reads the same
  * before and after it is chosen.
  *
- * @param {object} term - a sequence ontology term
+ * @param {object} term - an ontology term
  * @returns {string} the term name and identifier, or the identifier alone for a term without a name
  */
-export const mutationTypeLabel = (term) => (term?.name ? `${term.name} (${getIdentifier(term)})` : getIdentifier(term));
+export const ontologyTermLabel = (term) => (term?.name ? `${term.name} (${getIdentifier(term)})` : getIdentifier(term));
+
+/** Token label for a mutation type; see ontologyTermLabel. */
+export const mutationTypeLabel = ontologyTermLabel;
+
+// A use is an FBcv term from the 'experimental_tool_descriptor' namespace.
+export const usesSearchConfig = {
+	endpoint: Endpoints.Ontology.FBCV,
+	autocompleteFields: ontologyTermAutocompleteFields,
+	filterName: 'useFilter',
+	otherFilters: {
+		namespaceFilter: {
+			namespace: { queryString: 'experimental_tool_descriptor', tokenOperator: 'AND', useKeywordFields: true },
+		},
+	},
+};
 
 export const phenotypeTermSearchConfig = {
 	endpoint: Endpoints.Ontology.PHENOTYPE,
@@ -91,14 +106,8 @@ export const conditionTaxonSearchConfig = {
 	filterName: 'conditionTaxonFilter',
 };
 
-const buildSearchFn = (config) => (event, setFiltered, setInputValue) => {
-	const searchService = new SearchService();
-	setInputValue(event.query);
-	const filter = buildAutocompleteFilter(event, config.autocompleteFields);
-	autocompleteSearch(searchService, config.endpoint, config.filterName, filter, setFiltered, config.otherFilters);
-};
-
 export const mutationTypesSearch = buildSearchFn(mutationTypesSearchConfig);
+export const usesSearch = buildSearchFn(usesSearchConfig);
 export const diseaseSearch = buildSearchFn(diseaseSearchConfig);
 export const evidenceCodesSearch = buildSearchFn(evidenceCodesSearchConfig);
 export const conditionClassSearch = buildSearchFn(conditionClassSearchConfig);

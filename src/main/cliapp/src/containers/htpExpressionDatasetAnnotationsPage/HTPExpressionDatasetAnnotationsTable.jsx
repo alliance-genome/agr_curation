@@ -39,9 +39,6 @@ export const HTPExpressionDatasetAnnotationsTable = () => {
 
 	const searchService = new SearchService();
 
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
-
 	const handleExpressionDatasetOpen = (entities) =>
 		setExpressionDatasetData({ originalEntities: entities, dialog: true });
 	const handleSubseriesOpen = (entities) => setSubseriesData({ originalEntities: entities, dialog: true });
@@ -220,7 +217,9 @@ export const HTPExpressionDatasetAnnotationsTable = () => {
 					setTableState={setTableState}
 					columns={columns}
 					isEditable={false}
-					hasDetails={false}
+					hasDetails={true}
+					detailsEndpoint="htp-expression-dataset"
+					getDetailsIdentifier={(rowData) => rowData.curie || rowData.id?.toString()}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					toasts={{ toast_topleft, toast_topright }}

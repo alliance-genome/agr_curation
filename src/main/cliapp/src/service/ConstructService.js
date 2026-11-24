@@ -7,6 +7,10 @@ export class ConstructService extends BaseAuthService {
 		return this.api.put(`/construct`, updatedConstruct);
 	}
 
+	saveConstructDetail(updatedConstruct) {
+		return this.api.put(`/construct/updateDetail`, updatedConstruct);
+	}
+
 	createConstruct(newConstruct) {
 		return this.api.post(`/construct`, newConstruct);
 	}

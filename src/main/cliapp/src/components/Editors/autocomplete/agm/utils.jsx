@@ -1,5 +1,5 @@
-import { buildAutocompleteFilter, autocompleteSearch, buildCuratorSpeciesFilter } from '../../../../utils/utils';
-import { SearchService } from '../../../../service/SearchService';
+import { buildSearchFn } from '../base/buildSearchFn';
+import { buildCuratorSpeciesFilter } from '../../../../utils/utils';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { SubjectAutocompleteTemplate } from '../base/templates/SubjectAutocompleteTemplate';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
@@ -23,14 +23,6 @@ export const diseaseGeneticModifierAgmsSearchConfig = {
 	filterName: 'geneticModifierAgmsFilter',
 	otherFilters: () => buildCuratorSpeciesFilter(),
 	valueDisplay: agmValueDisplay,
-};
-
-const buildSearchFn = (config) => (event, setFiltered, setInputValue) => {
-	const searchService = new SearchService();
-	setInputValue(event.query);
-	const filter = buildAutocompleteFilter(event, config.autocompleteFields);
-	const otherFilters = typeof config.otherFilters === 'function' ? config.otherFilters() : config.otherFilters;
-	autocompleteSearch(searchService, config.endpoint, config.filterName, filter, setFiltered, otherFilters);
 };
 
 export const sgdStrainBackgroundSearch = buildSearchFn(sgdStrainBackgroundSearchConfig);

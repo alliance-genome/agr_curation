@@ -57,7 +57,8 @@ import lombok.ToString;
 	@Index(name = "htpdatasetannotation_dataprovider_index", columnList = "dataprovider_id"),
 	@Index(name = "htpdatasetannotation_dataprovidercrossreference_index", columnList = "dataprovidercrossreference_id"),
 	@Index(name = "htpdatasetannotation_createdby_index", columnList = "createdby_id"),
-	@Index(name = "htpdatasetannotation_updatedby_index", columnList = "updatedby_id")
+	@Index(name = "htpdatasetannotation_updatedby_index", columnList = "updatedby_id"),
+	@Index(name = "htpdatasetannotation_analysis_index", columnList = "analysis_id")
 })
 @CurieSubdomain(MatiSubdomain.HTP_EXPRESSION_DATASET)
 public class HTPExpressionDatasetAnnotation extends AuditedObject implements CurieInterface {
@@ -149,5 +150,17 @@ public class HTPExpressionDatasetAnnotation extends AuditedObject implements Cur
 	@Fetch(FetchMode.SELECT)
 	@JsonView({ CurationView.FieldsOnly.class })
 	private CrossReference dataProviderCrossReference;
+
+	// SCRUM-6714: FB scRNA-seq additions.
+	@JsonView({ CurationView.FieldsOnly.class })
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "symbol_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	private String symbol;
+
+	@IndexedEmbedded(includePaths = { "analysisType.name", "analysisType.name_keyword", "analysisType.curie", "analysisType.curie_keyword" })
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ CurationView.FieldsOnly.class })
+	private Analysis analysis;
 
 }

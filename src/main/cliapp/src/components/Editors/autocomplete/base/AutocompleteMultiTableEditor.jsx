@@ -1,7 +1,6 @@
 import { TableField } from '../../fields/TableField';
 import { MultiAutocomplete } from '../../widgets/MultiAutocomplete';
-import { SearchService } from '../../../../service/SearchService';
-import { autocompleteSearch, buildAutocompleteFilter } from '../../../../utils/utils';
+import { buildSearchFn } from './buildSearchFn';
 
 /**
  * Multi-select autocomplete over the entities a search config describes, for a row's
@@ -17,6 +16,8 @@ import { autocompleteSearch, buildAutocompleteFilter } from '../../../../utils/u
  * @param {object|(() => object)} [otherFilters] - extra filters, or a function returning
  *   them when the value is not ready until the search runs
  * @param {Function} [valueDisplay] - custom suggestion renderer
+ * @param {(item: object) => React.ReactNode} [selectedItemTemplate] - token label renderer; tokens show `subField`
+ *   without one
  * @returns {JSX.Element}
  */
 export const AutocompleteMultiTableEditor = ({
@@ -28,19 +29,21 @@ export const AutocompleteMultiTableEditor = ({
 	filterName,
 	otherFilters,
 	valueDisplay,
+	selectedItemTemplate,
 }) => {
-	const searchService = new SearchService();
-
-	const search = (event, setFiltered, setQuery) => {
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const resolvedOtherFilters = typeof otherFilters === 'function' ? otherFilters() : otherFilters;
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, resolvedOtherFilters);
-	};
+	const search = buildSearchFn({ endpoint, autocompleteFields, filterName, otherFilters });
 
 	return (
 		<TableField editorOptions={editorOptions} field={field}>
-			{(binding) => <MultiAutocomplete {...binding} search={search} subField={subField} valueDisplay={valueDisplay} />}
+			{(binding) => (
+				<MultiAutocomplete
+					{...binding}
+					search={search}
+					subField={subField}
+					valueDisplay={valueDisplay}
+					selectedItemTemplate={selectedItemTemplate}
+				/>
+			)}
 		</TableField>
 	);
 };

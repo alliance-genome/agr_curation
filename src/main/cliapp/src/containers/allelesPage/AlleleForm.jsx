@@ -6,15 +6,14 @@ import { DataProviderDetailPageTemplate } from '../../components/Templates/DataP
 import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';
 import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
 import { SynonymsForm } from '../../components/synonyms/SynonymsForm';
-import { FullNameForm } from './fullName/FullNameForm';
+import { NameSlotAnnotationForm } from '../../components/nameSlotAnnotations/NameSlotAnnotationForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
 import { SecondaryIdsForm } from '../../components/secondaryIds/SecondaryIdsForm';
 import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
 import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
 import { RelatedNotesForm } from '../../components/relatedNotes/RelatedNotesForm';
-import { SymbolForm } from './symbol/SymbolForm';
-import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
+import { GermlineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
 import { ReferencesForm } from './referencesTable/ReferencesForm';
 import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
 import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneAssociationsForm';
@@ -165,14 +164,26 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Name')}>
-				<FullNameForm state={state} dispatch={dispatch} isPending={pendingFields?.has('alleleFullName')} />
+				<NameSlotAnnotationForm
+					name={state.allele?.alleleFullName}
+					entityState={state.entityStates.alleleFullName}
+					dispatch={dispatch}
+					entityType="alleleFullName"
+					tableName="Name"
+					addLabel="Add Full Name"
+					isPending={pendingFields?.has('alleleFullName')}
+				/>
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Symbol')}>
-				<SymbolForm
-					state={state}
+				<NameSlotAnnotationForm
+					name={state.allele?.alleleSymbol}
+					entityState={state.entityStates.alleleSymbol}
 					dispatch={dispatch}
-					labelColumnSize={labelColumnSize}
+					entityType="alleleSymbol"
+					isSymbol
+					tableName="Symbol"
+					addLabel="Add Symbol"
 					required={isCreate}
 					isPending={pendingFields?.has('alleleSymbol')}
 					showAddButton={!isCreate}
@@ -213,7 +224,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Germline Transmission Status')}>
-				<GermilineTransmissionStatusForm
+				<GermlineTransmissionStatusForm
 					state={state}
 					dispatch={dispatch}
 					isPending={pendingFields?.has('alleleGermlineTransmissionStatus')}

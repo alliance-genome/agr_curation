@@ -1,5 +1,4 @@
-import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/utils';
-import { SearchService } from '../../../../service/SearchService';
+import { buildSearchFn } from '../base/buildSearchFn';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { ExConAutocompleteTemplate } from '../base/templates/ExConAutocompleteTemplate';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
@@ -21,15 +20,4 @@ export const conditionsDetailedSearchConfig = {
 	filterName: 'conditionSummaryFilter',
 };
 
-export const conditionsSearch = (event, setFiltered, setInputValue) => {
-	const searchService = new SearchService();
-	setInputValue(event.query);
-	const filter = buildAutocompleteFilter(event, conditionsSearchConfig.autocompleteFields);
-	autocompleteSearch(
-		searchService,
-		conditionsSearchConfig.endpoint,
-		conditionsSearchConfig.filterName,
-		filter,
-		setFiltered
-	);
-};
+export const conditionsSearch = buildSearchFn(conditionsSearchConfig);

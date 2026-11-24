@@ -1,6 +1,7 @@
 import { addDataKey } from '../../../utils/rows';
 import { stripReference } from '../../allelesPage/referencesTable/utils';
 import { stripUiFields as stripCrossReference } from '../../../components/crossReferences/utils';
+import { copyRow, copyRows } from '../../../utils/copyRows';
 
 const ROW_FIELDS = ['transgenicToolSynonyms', 'transgenicToolUses', 'relatedNotes'];
 const OBJECT_FIELDS = ['transgenicToolSymbol', 'transgenicToolFullName'];
@@ -35,6 +36,64 @@ export const buildTransgenicToolPayload = (transgenicTool) => {
 
 	return payload;
 };
+
+/**
+ * The tool as POST /transgenic-tool takes it (SCRUM-6691): as {@link buildTransgenicToolPayload} leaves it, with
+ * the type Reagent's JSON type info needs to read it. The associations are saved through their own endpoint once
+ * the tool exists, and the data provider is left to the API, which gives a new tool the curator's MOD.
+ *
+ * @param {Object} transgenicTool the tool as the create form holds it
+ * @returns {Object} a copy for the API; the argument is not modified
+ */
+export const buildTransgenicToolCreatePayload = (transgenicTool) => ({
+	...buildTransgenicToolPayload(transgenicTool),
+	type: 'TransgenicTool',
+});
+
+// The tool's fields a new tool starts with
+export const NEW_TRANSGENIC_TOOL = { type: 'TransgenicTool', placeholder: false, internal: false, obsolete: false };
+
+/**
+ * A new tool carrying the fields of a stored one that the create form edits, for Save & Add Another to start from
+ * (SCRUM-6691).
+ *
+ * Left behind: everything that identifies the stored tool (its ids), its data provider and audit fields, and its
+ * associations, which the create page holds apart ({@link copyToolAssociationRows}). Each copied row loses its own
+ * id and audit fields, so it is created afresh; the terms and references a row points to are kept. Its secondary
+ * IDs are kept too, as for cassettes, for a run of tools entered one after another.
+ *
+ * @param {Object} transgenicTool a tool as the API returns it
+ * @returns {Object} a tool without an id, not obsolete, carrying only the fields the create form edits
+ */
+export const buildDuplicateTransgenicTool = (transgenicTool) => ({
+	...NEW_TRANSGENIC_TOOL,
+	placeholder: transgenicTool.placeholder ?? false,
+	internal: transgenicTool.internal ?? false,
+	transgenicToolSymbol: copyRow(transgenicTool.transgenicToolSymbol),
+	transgenicToolFullName: copyRow(transgenicTool.transgenicToolFullName),
+	transgenicToolSynonyms: copyRows(transgenicTool.transgenicToolSynonyms) ?? [],
+	secondaryIdentifiers: [...(transgenicTool.secondaryIdentifiers ?? [])],
+	transgenicToolUses: copyRows(transgenicTool.transgenicToolUses) ?? [],
+	references: structuredClone(transgenicTool.references ?? []),
+	relatedNotes: copyRows(transgenicTool.relatedNotes) ?? [],
+	crossReferences: copyRows(transgenicTool.crossReferences) ?? [],
+});
+
+/**
+ * Association rows as new rows for another tool: each without its id, audit fields and subject, and ready for the
+ * associations table. The other tool and the relation are kept.
+ *
+ * @param {Object[]} rows the rows as the associations list holds them
+ * @returns {Object[]} copies; the argument is not modified
+ */
+export const copyToolAssociationRows = (rows) =>
+	prepareToolAssociations(
+		(rows ?? []).map((row) => {
+			/* eslint-disable-next-line no-unused-vars */
+			const { dataKey, transgenicToolAssociationSubject, ...copy } = copyRow(row);
+			return copy;
+		})
+	);
 
 /**
  * Readies the associations the API returned for the associations table: each gets its own `dataKey`.

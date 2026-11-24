@@ -3,10 +3,8 @@ import { useImmerReducer } from 'use-immer';
 const initialNewRelationState = {
 	newRelation: {
 		handle: '',
-		singleReference: {
-			curie: '',
-		},
-		conditionRelationType: { name: '' },
+		singleReference: null,
+		conditionRelationType: null,
 		conditions: [],
 	},
 	errorMessages: {},

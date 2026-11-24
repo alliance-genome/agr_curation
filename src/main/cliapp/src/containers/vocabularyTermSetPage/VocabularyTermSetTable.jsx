@@ -165,7 +165,6 @@ export const VocabularyTermSetTable = () => {
 			<NewVocabularyTermSetForm
 				newVocabularyTermSetState={newVocabularyTermSetState}
 				newVocabularyTermSetDispatch={newVocabularyTermSetDispatch}
-				searchService={searchService}
 				vocabularyTermSetService={vocabularyTermSetService}
 				setNewVocabularyTermSet={(newTermSet, queryClient) =>
 					setNewEntity(tableState, setTermSets, newTermSet, queryClient)

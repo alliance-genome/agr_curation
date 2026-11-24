@@ -3,7 +3,11 @@ import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../FormTableWrapper';
 import { SymbolFormTable } from './SymbolFormTable';
 import { FullNameFormTable } from './FullNameFormTable';
-import { buildEmptyNameSlotAnnotation } from '../../utils/rows';
+import { buildEmptyNameSlotAnnotation, KEEP_ROWS_IN_EDIT_MODE } from '../../utils/rows';
+import { TableEditorProvider } from '../Editors/fields/TableEditorContext';
+import { useDataKeyRowsStrategy } from '../Editors/fields/strategies/useDataKeyRowsStrategy';
+import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
+import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 
 /**
  * A detail page's symbol or name section: one name slot annotation held in the page's reducer and saved with the
@@ -40,8 +44,17 @@ export const NameSlotAnnotationForm = ({
 }) => {
 	const tableRef = useRef(null);
 	const NameFormTable = isSymbol ? SymbolFormTable : FullNameFormTable;
+	const synonymScopeTerms = useControlledVocabularyService('synonym_scope');
+	const nameTypeTerms = useVocabularyTermSetService(
+		isSymbol ? 'symbol_name_type' : nameTypeVocabType ?? 'full_name_type'
+	);
 
-	const editName = (field, value) => dispatch({ type: 'EDIT_OBJECT', entityType, field, value });
+	const names = name ? [name] : [];
+	const strategy = useDataKeyRowsStrategy({
+		rows: names,
+		errors: entityState.errorMessages,
+		write: ({ field, value }) => dispatch({ type: 'EDIT_OBJECT', entityType, field, value }),
+	});
 
 	const createNewNameHandler = (event) => {
 		event.preventDefault();
@@ -57,25 +70,17 @@ export const NameSlotAnnotationForm = ({
 	return (
 		<FormTableWrapper
 			table={
-				<NameFormTable
-					name={[name]}
-					editingRows={entityState.editingRows}
-					onRowEditChange={() => null}
-					tableRef={tableRef}
-					deletionHandler={deletionHandler}
-					errorMessages={entityState.errorMessages}
-					textOnChangeHandler={(rowIndex, event, field) => editName(field, event.target.value)}
-					// The name is the reducer's, which freezes it, so edits go through dispatch alone:
-					// editorCallback would write into the frozen row and throw before the dispatch (SCRUM-6655)
-					synonymScopeOnChangeHandler={(props, event) => editName('synonymScope', event.target.value)}
-					nameTypeOnChangeHandler={(props, event) => editName('nameType', event.target.value)}
-					internalOnChangeHandler={(props, event) => editName('internal', event.target?.value?.name)}
-					evidenceOnChangeHandler={(event, setFieldValue) => {
-						setFieldValue(event.target.value);
-						editName('evidence', event.target.value);
-					}}
-					nameTypeVocabType={nameTypeVocabType}
-				/>
+				<TableEditorProvider strategy={strategy}>
+					<NameFormTable
+						name={names}
+						editingRows={entityState.editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						tableRef={tableRef}
+						deletionHandler={deletionHandler}
+						synonymScopeTerms={synonymScopeTerms}
+						nameTypeTerms={nameTypeTerms}
+					/>
+				</TableEditorProvider>
 			}
 			tableName={tableName}
 			showTable={entityState.show}
