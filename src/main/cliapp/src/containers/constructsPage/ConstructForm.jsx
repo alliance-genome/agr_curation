@@ -10,11 +10,7 @@ import { SecondaryIdsForm } from '../../components/secondaryIds/SecondaryIdsForm
 import { RelatedNotesForm } from '../../components/relatedNotes/RelatedNotesForm';
 import { ReferencesForm } from '../allelesPage/referencesTable/ReferencesForm';
 import { CassettesForm } from './cassettes/CassettesForm';
-
-const labelColumnSize = 'col-3';
-const widgetColumnSize = 'col-4';
-const fieldDetailsColumnSize = 'col-5';
-const columnSizes = { labelColumnSize, widgetColumnSize, fieldDetailsColumnSize };
+import { DETAIL_FIELD_LAYOUT } from '../../components/Editors/fields/fieldLayouts';
 
 /**
  * The construct detail form's sections, in display order.
@@ -48,24 +44,28 @@ export const ConstructForm = ({ state, dispatch, pendingFields }) => {
 			isPending={pendingFields?.has(field)}
 			onChange={edit(field)}
 			errorMessages={state.errorMessages}
-			{...columnSizes}
+			{...DETAIL_FIELD_LAYOUT}
 		/>
 	);
 
 	return (
 		// Enter in a table's filters must not submit and reload the page.
 		<form className="mt-8" onSubmit={(event) => event.preventDefault()}>
-			<IdentifierDetailPageTemplate identifier={construct?.curie} label="Curie" {...columnSizes} />
+			<IdentifierDetailPageTemplate identifier={construct?.curie} label="Curie" {...DETAIL_FIELD_LAYOUT} />
 			<Divider />
 			<IdentifierDetailPageTemplate
 				identifier={construct?.primaryExternalId}
 				label="Primary External ID"
-				{...columnSizes}
+				{...DETAIL_FIELD_LAYOUT}
 			/>
 			<Divider />
-			<IdentifierDetailPageTemplate identifier={construct?.modInternalId} label="MOD Internal ID" {...columnSizes} />
+			<IdentifierDetailPageTemplate
+				identifier={construct?.modInternalId}
+				label="MOD Internal ID"
+				{...DETAIL_FIELD_LAYOUT}
+			/>
 			<Divider />
-			<IdentifierDetailPageTemplate identifier={construct?.uniqueId} label="Unique ID" {...columnSizes} />
+			<IdentifierDetailPageTemplate identifier={construct?.uniqueId} label="Unique ID" {...DETAIL_FIELD_LAYOUT} />
 			<Divider />
 			{nameSection('constructSymbol', { isSymbol: true, tableName: 'Symbol', addLabel: 'Add Symbol' })}
 			<Divider />
@@ -83,15 +83,15 @@ export const ConstructForm = ({ state, dispatch, pendingFields }) => {
 			<Divider />
 			{booleanSection('placeholder', 'Placeholder')}
 			<Divider />
-			<DataProviderDetailPageTemplate dataProvider={construct?.dataProvider?.abbreviation} {...columnSizes} />
+			<DataProviderDetailPageTemplate dataProvider={construct?.dataProvider?.abbreviation} {...DETAIL_FIELD_LAYOUT} />
 			<Divider />
-			<UserDetailPageTemplate user={construct?.createdBy?.uniqueId} fieldName="Created By" {...columnSizes} />
+			<UserDetailPageTemplate user={construct?.createdBy?.uniqueId} fieldName="Created By" {...DETAIL_FIELD_LAYOUT} />
 			<Divider />
-			<DateDetailPageTemplate date={construct?.dateCreated} fieldName="Date Created" {...columnSizes} />
+			<DateDetailPageTemplate date={construct?.dateCreated} fieldName="Date Created" {...DETAIL_FIELD_LAYOUT} />
 			<Divider />
-			<UserDetailPageTemplate user={construct?.updatedBy?.uniqueId} fieldName="Updated By" {...columnSizes} />
+			<UserDetailPageTemplate user={construct?.updatedBy?.uniqueId} fieldName="Updated By" {...DETAIL_FIELD_LAYOUT} />
 			<Divider />
-			<DateDetailPageTemplate date={construct?.dateUpdated} fieldName="Date Updated" {...columnSizes} />
+			<DateDetailPageTemplate date={construct?.dateUpdated} fieldName="Date Updated" {...DETAIL_FIELD_LAYOUT} />
 			<Divider />
 			{booleanSection('internal', 'Internal')}
 			<Divider />

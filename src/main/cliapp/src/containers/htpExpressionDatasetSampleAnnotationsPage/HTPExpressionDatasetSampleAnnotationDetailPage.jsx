@@ -19,9 +19,7 @@ import { BioSampleAgeTable } from './BioSampleAgeTable';
 import { BioSampleGenomicInformationTable } from './BioSampleGenomicInformationTable';
 import { MicroarraySampleDetailsTable } from './MicroarraySampleDetailsTable';
 import { HTPExpressionDatasetSampleAnnotationService } from '../../service/HTPExpressionDatasetSampleAnnotationService';
-
-const labelColumnSize = 'col-3';
-const widgetColumnSize = 'col-9';
+import { WIDE_DETAIL_FIELD_LAYOUT } from '../../components/Editors/fields/fieldLayouts';
 
 export const HTP_EXPRESSION_DATASET_SAMPLE_DETAIL_TOGGLEABLE_FIELDS = [
 	'Expression Sample',
@@ -124,9 +122,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Curie')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Curie"
 							formField={<StringTemplate string={sample?.curie} />}
 						/>
@@ -134,9 +130,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Title')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Title"
 							formField={<StringTemplate string={sample?.htpExpressionSampleTitle} />}
 						/>
@@ -144,9 +138,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Taxon')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Taxon"
 							formField={<OntologyTermTemplate term={sample?.taxon} />}
 						/>
@@ -154,9 +146,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Type')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Type"
 							formField={<OntologyTermTemplate term={sample?.htpExpressionSampleType} />}
 						/>
@@ -174,9 +164,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Locations')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Locations"
 							formField={<StringListTemplate list={sample?.htpExpressionSampleLocations?.map(locationText)} />}
 						/>
@@ -192,9 +180,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Assembly Versions')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Assembly Versions"
 							formField={<StringListTemplate list={sample?.assemblyVersions} />}
 						/>
@@ -202,9 +188,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Abundance')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Abundance"
 							formField={<StringTemplate string={sample?.abundance} />}
 						/>
@@ -212,9 +196,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Assay Used')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Assay Used"
 							formField={<OntologyTermTemplate term={sample?.expressionAssayUsed} />}
 						/>
@@ -234,9 +216,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Genetic Sex')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Genetic Sex"
 							formField={<StringTemplate string={sample?.geneticSex?.name} />}
 						/>
@@ -256,9 +236,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Sequencing Format')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Sequencing Format"
 							formField={<StringTemplate string={sample?.sequencingFormat?.name} />}
 						/>
@@ -274,9 +252,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Data Provider')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Data Provider"
 							formField={<StringTemplate string={sample?.dataProvider?.abbreviation} />}
 						/>
@@ -284,9 +260,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Updated By')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Updated By"
 							formField={<StringTemplate string={sample?.updatedBy?.uniqueId} />}
 						/>
@@ -294,9 +268,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Date Updated')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Date Updated"
 							formField={<StringTemplate string={sample?.dateUpdated} />}
 						/>
@@ -304,9 +276,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Created By')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Created By"
 							formField={<StringTemplate string={sample?.createdBy?.uniqueId} />}
 						/>
@@ -314,9 +284,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Date Created')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Date Created"
 							formField={<StringTemplate string={sample?.dateCreated} />}
 						/>
@@ -324,9 +292,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Internal')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Internal"
 							formField={<BooleanTemplate value={sample?.internal} />}
 						/>
@@ -334,9 +300,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Sample Obsolete')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Sample Obsolete"
 							formField={<BooleanTemplate value={sample?.obsolete} />}
 						/>

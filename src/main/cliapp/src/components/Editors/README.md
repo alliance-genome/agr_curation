@@ -54,8 +54,11 @@ props:
   its errors live under another key.
 - Layout props: `labelColumnSize`, `widgetColumnSize`, `fieldDetailsColumnSize`, `labelClassName`,
   `showAdditionalData`, plus `required` and `isPending` (the "Pending Edits!" mark).
-- `dialogFieldLayout.js` exports `DIALOG_FIELD_LAYOUT`, the layout for narrow New Entity dialogs: the label above the
-  widget, full width, no details column. Spread it onto each field.
+- `fieldLayouts.js` exports the shared layouts; spread one onto each field instead of passing the layout props:
+  - `DETAIL_FIELD_LAYOUT`: entity detail and create pages (label `col-3`, widget `col-4`, details `col-5`)
+  - `WIDE_DETAIL_FIELD_LAYOUT`: detail pages with no details column (label `col-3`, widget `col-9`)
+  - `NEW_ANNOTATION_FIELD_LAYOUT`: the New Annotation dialog (label `col-2`, widget `col-4`, details `col-5`)
+  - `DIALOG_FIELD_LAYOUT`: narrow New Entity dialogs: the label above the widget, full width, no details column
 
 ### `TableField`: table cells
 
@@ -140,8 +143,8 @@ export const diseaseSearch = buildSearchFn(diseaseSearchConfig);
 **Add a field to a detail page or dialog**
 
 1. Pick the widget, and an existing `…DetailPageEditor` if one fits.
-2. Wrap it in `FormField` with the page's layout props (or `DIALOG_FIELD_LAYOUT` in a New Entity dialog), passing
-   the page's merged errors.
+2. Wrap it in `FormField`, spreading the page's layout from `fieldLayouts.js` (`DIALOG_FIELD_LAYOUT` in a New Entity
+   dialog), and pass the page's merged errors.
 3. For an autocomplete, use the search from the entity's `utils` file, or add one (below).
 
 **Add a table column editor**

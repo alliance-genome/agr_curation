@@ -15,6 +15,7 @@ import { SynonymsForm } from './synonyms/SynonymsForm';
 import { GenomicLocationsForm } from './genomicLocations/GenomicLocationsForm';
 import { FormSection } from '../../components/FormFieldVisibility';
 import { getEffectiveModAbbreviation } from '../../utils/affiliation';
+import { DETAIL_FIELD_LAYOUT } from '../../components/Editors/fields/fieldLayouts';
 
 const FIELDS_OMITTED_ON_CREATE = [
 	'Curie',
@@ -59,10 +60,6 @@ export const VARIANT_CREATE_TOGGLEABLE_FIELDS = VARIANT_DETAIL_TOGGLEABLE_FIELDS
 	(field) => !FIELDS_OMITTED_ON_CREATE.includes(field) && !FIELDS_REQUIRED_ON_CREATE.includes(field)
 );
 
-const labelColumnSize = 'col-3';
-const widgetColumnSize = 'col-4';
-const fieldDetailsColumnSize = 'col-5';
-
 /**
  * The variant field sections, in display order.
  *
@@ -88,22 +85,14 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 	return (
 		<form className="mt-8">
 			<FormSection isVisible={!isCreate && isVisible('Curie')}>
-				<IdentifierDetailPageTemplate
-					identifier={state.variant?.curie}
-					label="Curie"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				<IdentifierDetailPageTemplate identifier={state.variant?.curie} label="Curie" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Primary External ID')}>
 				<IdentifierDetailPageTemplate
 					identifier={state.variant?.primaryExternalId}
 					label="Primary External ID"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
@@ -111,20 +100,12 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				<IdentifierDetailPageTemplate
 					identifier={state.variant?.modInternalId}
 					label="MOD Internal ID"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Unique ID')}>
-				<IdentifierDetailPageTemplate
-					identifier={state.variant?.uniqueId}
-					label="Unique ID"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				<IdentifierDetailPageTemplate identifier={state.variant?.uniqueId} label="Unique ID" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Taxon')}>
@@ -132,9 +113,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 					taxon={state.variant?.taxon}
 					required={isCreate}
 					onChange={onOntologyTermValueChange('taxon')}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 				/>
 			</FormSection>
@@ -144,9 +123,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 					variantType={state.variant?.variantType}
 					required={isCreate}
 					onChange={onOntologyTermValueChange('variantType')}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 				/>
 			</FormSection>
@@ -158,9 +135,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 					label="Variant Status"
 					vocabularyLabel="variant_status"
 					onChange={onFieldValueChange('variantStatus')}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 				/>
 			</FormSection>
@@ -181,38 +156,26 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				<SourceGeneralConsequenceDetailPageEditor
 					sourceGeneralConsequence={state.variant?.sourceGeneralConsequence}
 					onChange={onOntologyTermValueChange('sourceGeneralConsequence')}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 				/>
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Synonyms')}>
-				<SynonymsForm
-					state={state}
-					dispatch={dispatch}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				<SynonymsForm state={state} dispatch={dispatch} {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Data Provider')}>
 				<DataProviderDetailPageTemplate
 					dataProvider={isCreate ? getEffectiveModAbbreviation() : state.variant?.dataProvider?.abbreviation}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
 			{/* Read only: the curation system has no cross reference editor, here or on the table. */}
 			<FormSection isVisible={!isCreate && isVisible('Cross References')}>
 				<DetailPageFieldWrapper
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-					widgetColumnSize={widgetColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					fieldName="Cross References"
 					formField={<CrossReferencesTemplate list={state.variant?.crossReferences} />}
 					showAdditionalData={false}
@@ -223,40 +186,24 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				<UserDetailPageTemplate
 					user={state.variant?.updatedBy?.uniqueId}
 					fieldName="Updated By"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Date Updated')}>
-				<DateDetailPageTemplate
-					date={state.variant?.dateUpdated}
-					fieldName="Date Updated"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				<DateDetailPageTemplate date={state.variant?.dateUpdated} fieldName="Date Updated" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Created By')}>
 				<UserDetailPageTemplate
 					user={state.variant?.createdBy?.uniqueId}
 					fieldName="Created By"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Date Created')}>
-				<DateDetailPageTemplate
-					date={state.variant?.dateCreated}
-					fieldName="Date Created"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				<DateDetailPageTemplate date={state.variant?.dateCreated} fieldName="Date Created" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Internal')}>
@@ -265,9 +212,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 					name={'internal'}
 					label={'Internal'}
 					onChange={onFieldValueChange('internal')}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 				/>
 			</FormSection>
@@ -278,9 +223,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 					name={'obsolete'}
 					label={'Obsolete'}
 					onChange={onFieldValueChange('obsolete')}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 				/>
 			</FormSection>
