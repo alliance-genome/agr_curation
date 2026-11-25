@@ -80,7 +80,6 @@ export const DiseaseAnnotationsTable = () => {
 	const geneRelationTerms = useVocabularyTermSetService('gene_disease_relation');
 	const geneticSexTerms = useControlledVocabularyService('genetic_sex');
 	const annotationTypeTerms = useControlledVocabularyService('annotation_type');
-	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
 	const diseaseQualifiersTerms = useControlledVocabularyService('disease_qualifier');
 
@@ -675,7 +674,6 @@ export const DiseaseAnnotationsTable = () => {
 				newAnnotationState={newAnnotationState}
 				newAnnotationDispatch={newAnnotationDispatch}
 				relationsTerms={relationsTerms}
-				negatedTerms={booleanTerms?.terms || []}
 				setNewDiseaseAnnotation={(newAnnotation, queryClient) =>
 					setNewEntity(tableState, setDiseaseAnnotations, newAnnotation, queryClient)
 				}

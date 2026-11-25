@@ -13,6 +13,7 @@ import { RelatedNotesForm } from '../../components/relatedNotes/RelatedNotesForm
 import { CrossReferencesForm } from '../../components/crossReferences/CrossReferencesForm';
 import { GcrpCrossReferenceForm } from './gcrpCrossReference/GcrpCrossReferenceForm';
 import { getEffectiveModAbbreviation } from '../../utils/affiliation';
+import { DETAIL_FIELD_LAYOUT } from '../../components/Editors/fields/fieldLayouts';
 
 // The sections create mode does not render, so its menu does not offer them.
 const FIELDS_OMITTED_ON_CREATE = [
@@ -57,11 +58,6 @@ export const GENE_CREATE_TOGGLEABLE_FIELDS = GENE_DETAIL_TOGGLEABLE_FIELDS.filte
 	(field) => !FIELDS_OMITTED_ON_CREATE.includes(field) && !FIELDS_REQUIRED_ON_CREATE.includes(field)
 );
 
-const labelColumnSize = 'col-3';
-const widgetColumnSize = 'col-4';
-const fieldDetailsColumnSize = 'col-5';
-const columnSizes = { labelColumnSize, widgetColumnSize, fieldDetailsColumnSize };
-
 // An autosuggest hands back the picked term, `{curie}` holding typed text so the field shows it and the API can
 // reject it, or null once emptied, which is held as a term with a blank curie.
 const termFrom = (value) => value ?? { curie: '' };
@@ -97,19 +93,23 @@ export const GeneForm = ({ state, dispatch, isVisible, mode = 'detail', pendingF
 	return (
 		<form className="mt-8">
 			<FormSection isVisible={!isCreate && isVisible('Curie')}>
-				<IdentifierDetailPageTemplate identifier={gene?.curie} label="Curie" {...columnSizes} />
+				<IdentifierDetailPageTemplate identifier={gene?.curie} label="Curie" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Primary External ID')}>
 				<IdentifierDetailPageTemplate
 					identifier={gene?.primaryExternalId}
 					label="Primary External ID"
-					{...columnSizes}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('MOD Internal ID')}>
-				<IdentifierDetailPageTemplate identifier={gene?.modInternalId} label="MOD Internal ID" {...columnSizes} />
+				<IdentifierDetailPageTemplate
+					identifier={gene?.modInternalId}
+					label="MOD Internal ID"
+					{...DETAIL_FIELD_LAYOUT}
+				/>
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Name')}>
@@ -149,7 +149,7 @@ export const GeneForm = ({ state, dispatch, isVisible, mode = 'detail', pendingF
 					required
 					isPending={pendingFields?.has('geneType')}
 					errorMessages={state.errorMessages}
-					{...columnSizes}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
@@ -160,7 +160,7 @@ export const GeneForm = ({ state, dispatch, isVisible, mode = 'detail', pendingF
 					required
 					isPending={pendingFields?.has('taxon')}
 					errorMessages={state.errorMessages}
-					{...columnSizes}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
@@ -171,7 +171,7 @@ export const GeneForm = ({ state, dispatch, isVisible, mode = 'detail', pendingF
 			<FormSection isVisible={isVisible('Data Provider')}>
 				<DataProviderDetailPageTemplate
 					dataProvider={isCreate ? getEffectiveModAbbreviation() : gene?.dataProvider?.abbreviation}
-					{...columnSizes}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
@@ -188,19 +188,19 @@ export const GeneForm = ({ state, dispatch, isVisible, mode = 'detail', pendingF
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Updated By')}>
-				<UserDetailPageTemplate user={gene?.updatedBy?.uniqueId} fieldName="Updated By" {...columnSizes} />
+				<UserDetailPageTemplate user={gene?.updatedBy?.uniqueId} fieldName="Updated By" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Date Updated')}>
-				<DateDetailPageTemplate date={gene?.dateUpdated} fieldName="Date Updated" {...columnSizes} />
+				<DateDetailPageTemplate date={gene?.dateUpdated} fieldName="Date Updated" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Created By')}>
-				<UserDetailPageTemplate user={gene?.createdBy?.uniqueId} fieldName="Created By" {...columnSizes} />
+				<UserDetailPageTemplate user={gene?.createdBy?.uniqueId} fieldName="Created By" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Date Created')}>
-				<DateDetailPageTemplate date={gene?.dateCreated} fieldName="Date Created" {...columnSizes} />
+				<DateDetailPageTemplate date={gene?.dateCreated} fieldName="Date Created" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Internal')}>
@@ -211,7 +211,7 @@ export const GeneForm = ({ state, dispatch, isVisible, mode = 'detail', pendingF
 					isPending={pendingFields?.has('internal')}
 					onChange={edit('internal')}
 					errorMessages={state.errorMessages}
-					{...columnSizes}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
@@ -223,7 +223,7 @@ export const GeneForm = ({ state, dispatch, isVisible, mode = 'detail', pendingF
 					isPending={pendingFields?.has('obsolete')}
 					onChange={edit('obsolete')}
 					errorMessages={state.errorMessages}
-					{...columnSizes}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 		</form>

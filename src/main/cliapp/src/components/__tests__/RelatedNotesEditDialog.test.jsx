@@ -71,7 +71,7 @@ const pickReference = async (container, rowIndex = 0) => {
  * the main row on Keep Edits, once every note passes validation.
  */
 describe('<RelatedNotesEditDialog />', () => {
-	const openDialog = async (originalRelatedNotes = [note('first note')], props = {}) => {
+	const openDialog = async (originalRelatedNotes = [note('first note')], props = {}, openData = {}) => {
 		const editorCallback = vi.fn();
 		const setErrorMessagesMainRow = vi.fn();
 		const result = render(
@@ -82,6 +82,7 @@ describe('<RelatedNotesEditDialog />', () => {
 					dialog: true,
 					rowIndex: 2,
 					mainRowProps: { editorCallback },
+					...openData,
 				}}
 				setOriginalRelatedNotesData={vi.fn()}
 				errorMessagesMainRow={{}}
@@ -91,9 +92,10 @@ describe('<RelatedNotesEditDialog />', () => {
 			/>
 		);
 		// The pop-up copies its notes in onShow, which runs as the open transition ends.
+		const openingRows = props.singleValue && !originalRelatedNotes?.length ? 1 : originalRelatedNotes.length;
 		await waitFor(() => {
 			expect(result.baseElement.querySelector('.p-dialog-enter-done')).not.toBeNull();
-			expect(bodyRows(result.baseElement)).toHaveLength(originalRelatedNotes.length);
+			expect(bodyRows(result.baseElement)).toHaveLength(openingRows);
 		});
 		return { ...result, editorCallback, setErrorMessagesMainRow };
 	};
@@ -260,5 +262,77 @@ describe('<RelatedNotesEditDialog />', () => {
 
 		await waitFor(() => expect(editorCallback).toHaveBeenCalled());
 		expect(editorCallback.mock.calls[0][0][0]).toMatchObject({ freeText: 'edited note' });
+	});
+
+	it('starts a new note with the default note type', async () => {
+		const { baseElement, editorCallback } = await openDialog([], { defaultNoteType: 'comment' });
+
+		fireEvent.click(getButton(baseElement, 'New Note'));
+		await waitFor(() => expect(bodyRows(baseElement)).toHaveLength(1));
+		typeInColumn(baseElement, 'Text', 'new note');
+		keepEdits(baseElement);
+
+		await waitFor(() => expect(editorCallback).toHaveBeenCalled());
+		expect(editorCallback).toHaveBeenCalledWith([
+			{ noteType: { name: 'comment' }, freeText: 'new note', internal: false },
+		]);
+	});
+
+	it('opens a single note row with no note on a new note of the default note type', async () => {
+		const { baseElement, editorCallback } = await openDialog([], { singleValue: true, defaultNoteType: 'comment' });
+
+		expect(getButton(baseElement, 'New Note')).toBeDisabled();
+		typeInColumn(baseElement, 'Text', 'only note');
+		keepEdits(baseElement);
+
+		await waitFor(() => expect(editorCallback).toHaveBeenCalled());
+		expect(editorCallback).toHaveBeenCalledWith([
+			{ noteType: { name: 'comment' }, freeText: 'only note', internal: false },
+		]);
+	});
+
+	it('offers New Note on a single note row only once its note is deleted', async () => {
+		const { baseElement } = await openDialog([note('only note')], { singleValue: true });
+
+		expect(getButton(baseElement, 'New Note')).toBeDisabled();
+		clickDeleteInRow(baseElement, 0);
+		await waitFor(() => expect(bodyRows(baseElement)).toHaveLength(0));
+		expect(getButton(baseElement, 'New Note')).not.toBeDisabled();
+	});
+
+	it("marks pending edits under the row key and field it is given, keeping the row's other errors", async () => {
+		const symbolError = { severity: 'error', message: 'symbol is bad' };
+		const otherRowErrors = { relatedNote: { severity: 'error', message: 'other row' } };
+		const { baseElement, setErrorMessagesMainRow } = await openDialog(
+			[note('first note')],
+			{
+				pendingEditsField: 'relatedNote',
+				errorMessagesMainRow: { 'row-7': { symbol: symbolError }, 2: otherRowErrors },
+			},
+			{ rowKey: 'row-7' }
+		);
+
+		keepEdits(baseElement);
+
+		await waitFor(() => expect(setErrorMessagesMainRow).toHaveBeenCalled());
+		expect(setErrorMessagesMainRow).toHaveBeenCalledWith({
+			'row-7': { symbol: symbolError, relatedNote: { severity: 'warn', message: 'Pending Edits!' } },
+			2: otherRowErrors,
+		});
+	});
+
+	it('keeps the edits only once while the notes are being validated', async () => {
+		let finishValidating;
+		validate.mockReturnValue(new Promise((resolve) => (finishValidating = () => resolve(VALID))));
+		const { baseElement, editorCallback } = await openDialog();
+
+		keepEdits(baseElement);
+		await waitFor(() => expect(getButton(baseElement, 'Keep Edits')).toBeDisabled());
+		keepEdits(baseElement);
+		finishValidating();
+
+		await waitFor(() => expect(editorCallback).toHaveBeenCalled());
+		expect(validate).toHaveBeenCalledTimes(1);
+		expect(editorCallback).toHaveBeenCalledTimes(1);
 	});
 });

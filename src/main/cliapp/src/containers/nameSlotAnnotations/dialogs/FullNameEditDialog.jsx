@@ -17,6 +17,7 @@ import { InputTextTableEditor } from '../../../components/Editors/text/InputText
 import { ControlledVocabularyTableEditor } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
 import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
+import { markPendingEdits } from '../../../utils/pendingEdits';
 
 /**
  * Dialog for editing a main-table row's full name, or, given a title and term set, another name held the same
@@ -132,14 +133,7 @@ export const FullNameEditDialog = ({
 			mainRowProps.editorCallback(_localFullNames[0] || null);
 		}
 
-		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
-		let messageObject = {
-			severity: 'warn',
-			message: 'Pending Edits!',
-		};
-		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex][field] = messageObject;
-		setErrorMessagesMainRow({ ...errorMessagesCopy });
+		setErrorMessagesMainRow(markPendingEdits(errorMessagesMainRow, rowIndex, field));
 
 		setOriginalFullNameData((originalFullNameData) => {
 			return {

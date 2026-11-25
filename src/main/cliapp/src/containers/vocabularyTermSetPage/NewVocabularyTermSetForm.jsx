@@ -5,16 +5,16 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormField } from '../../components/Editors/fields/FormField';
-import { DIALOG_FIELD_LAYOUT } from '../../components/Editors/fields/dialogFieldLayout';
+import { DIALOG_FIELD_LAYOUT } from '../../components/Editors/fields/fieldLayouts';
 import { TextInput } from '../../components/Editors/widgets/TextInput';
 import { SingleAutocomplete } from '../../components/Editors/widgets/SingleAutocomplete';
 import { MultiAutocomplete } from '../../components/Editors/widgets/MultiAutocomplete';
 import { vocabularySearch, vocabularySearchConfig } from '../../components/Editors/autocomplete/vocabulary/utils';
 import {
 	buildMemberTermsOtherFilters,
-	memberTermsSearch,
 	memberTermsSearchConfig,
 } from '../../components/Editors/autocomplete/vocabularyTerm/utils';
+import { buildSearchFn } from '../../components/Editors/autocomplete/base/buildSearchFn';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 /**
@@ -85,8 +85,10 @@ export const NewVocabularyTermSetForm = ({
 		});
 	};
 
-	const searchVocabularyTerms = (event, setSuggestions, setQuery) =>
-		memberTermsSearch(event, setSuggestions, setQuery, buildMemberTermsOtherFilters(vocabulary?.name));
+	const searchVocabularyTerms = buildSearchFn({
+		...memberTermsSearchConfig,
+		otherFilters: () => buildMemberTermsOtherFilters(vocabulary?.name),
+	});
 
 	const fieldProps = (field) => ({
 		name: field,

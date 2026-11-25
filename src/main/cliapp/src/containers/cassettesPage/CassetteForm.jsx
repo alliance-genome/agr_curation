@@ -16,6 +16,7 @@ import {
 	STR_COMPONENTS,
 } from './components/componentConfigs';
 import { CassetteComponentsForm } from './detail/CassetteComponentsForm';
+import { DETAIL_FIELD_LAYOUT } from '../../components/Editors/fields/fieldLayouts';
 
 const ENTITY_KEY = 'cassette';
 
@@ -63,12 +64,6 @@ export const CASSETTE_CREATE_TOGGLEABLE_FIELDS = [
 	'Internal',
 ];
 
-const labelColumnSize = 'col-3';
-const widgetColumnSize = 'col-4';
-const fieldDetailsColumnSize = 'col-5';
-
-const columnSizes = { labelColumnSize, widgetColumnSize, fieldDetailsColumnSize };
-
 /**
  * The sections of a cassette, each of which the curator can hide through the field menu: on the detail page
  * (SCRUM-6747) and, without the fields the API sets, on the create page (SCRUM-6748).
@@ -96,7 +91,7 @@ export const CassetteForm = ({ state, dispatch, componentSections, isVisible, mo
 			label={label}
 			onChange={onBooleanChange(field)}
 			errorMessages={state.errorMessages}
-			{...columnSizes}
+			{...DETAIL_FIELD_LAYOUT}
 		/>
 	);
 
@@ -105,7 +100,7 @@ export const CassetteForm = ({ state, dispatch, componentSections, isVisible, mo
 			<IdentifierDetailPageTemplate
 				identifier={cassette?.[field]}
 				label={label}
-				{...columnSizes}
+				{...DETAIL_FIELD_LAYOUT}
 				showAdditionalData={false}
 			/>
 		</FormSection>
@@ -145,7 +140,7 @@ export const CassetteForm = ({ state, dispatch, componentSections, isVisible, mo
 				<SynonymsForm {...formProps} entityType="cassetteSynonyms" />
 			</FormSection>
 			<FormSection isVisible={showsField('Secondary IDs')}>
-				<SecondaryIdsForm {...formProps} {...columnSizes} />
+				<SecondaryIdsForm {...formProps} {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 			{componentSections.map(({ config, components }) => (
 				<FormSection key={config.list} isVisible={showsField(config.title)}>
@@ -159,19 +154,19 @@ export const CassetteForm = ({ state, dispatch, componentSections, isVisible, mo
 				<ReferencesForm {...formProps} />
 			</FormSection>
 			<FormSection isVisible={showsField('Data Provider')}>
-				<DataProviderDetailPageTemplate dataProvider={cassette?.dataProvider?.abbreviation} {...columnSizes} />
+				<DataProviderDetailPageTemplate dataProvider={cassette?.dataProvider?.abbreviation} {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 			<FormSection isVisible={showsField('Updated By')}>
-				<UserDetailPageTemplate user={cassette?.updatedBy?.uniqueId} fieldName="Updated By" {...columnSizes} />
+				<UserDetailPageTemplate user={cassette?.updatedBy?.uniqueId} fieldName="Updated By" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 			<FormSection isVisible={showsField('Date Updated')}>
-				<DateDetailPageTemplate date={cassette?.dateUpdated} fieldName="Date Updated" {...columnSizes} />
+				<DateDetailPageTemplate date={cassette?.dateUpdated} fieldName="Date Updated" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 			<FormSection isVisible={showsField('Created By')}>
-				<UserDetailPageTemplate user={cassette?.createdBy?.uniqueId} fieldName="Created By" {...columnSizes} />
+				<UserDetailPageTemplate user={cassette?.createdBy?.uniqueId} fieldName="Created By" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 			<FormSection isVisible={showsField('Date Created')}>
-				<DateDetailPageTemplate date={cassette?.dateCreated} fieldName="Date Created" {...columnSizes} />
+				<DateDetailPageTemplate date={cassette?.dateCreated} fieldName="Date Created" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 			<FormSection isVisible={showsField('Placeholder')}>{booleanField('placeholder', 'Placeholder')}</FormSection>
 			<FormSection isVisible={showsField('Internal')}>{booleanField('internal', 'Internal')}</FormSection>

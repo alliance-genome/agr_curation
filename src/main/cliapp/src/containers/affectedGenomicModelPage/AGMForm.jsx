@@ -12,6 +12,7 @@ import { SynonymsForm } from './synonyms/SynonymsForm';
 import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
 import { AssociatedSTRsTemplate } from './associatedSTRs/AssociatedSTRsTemplate';
 import { FormSection } from '../../components/FormFieldVisibility';
+import { DETAIL_FIELD_LAYOUT } from '../../components/Editors/fields/fieldLayouts';
 
 // Every section on the page, in display order.
 export const AGM_DETAIL_TOGGLEABLE_FIELDS = [
@@ -59,10 +60,6 @@ export const AGM_CREATE_TOGGLEABLE_FIELDS = AGM_DETAIL_TOGGLEABLE_FIELDS.filter(
 	(field) => !FIELDS_OMITTED_ON_CREATE.includes(field) && !FIELDS_REQUIRED_ON_CREATE.includes(field)
 );
 
-const labelColumnSize = 'col-3';
-const widgetColumnSize = 'col-4';
-const fieldDetailsColumnSize = 'col-5';
-
 /**
  * The AGM field sections, in display order.
  *
@@ -87,22 +84,14 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 	return (
 		<form className="mt-8">
 			<FormSection isVisible={!isCreate && isVisible('Curie')}>
-				<IdentifierDetailPageTemplate
-					identifier={state.agm?.curie}
-					label="Curie"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				<IdentifierDetailPageTemplate identifier={state.agm?.curie} label="Curie" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Primary External ID')}>
 				<IdentifierDetailPageTemplate
 					identifier={state.agm?.primaryExternalId}
 					label="Primary External ID"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
@@ -110,9 +99,7 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 				<IdentifierDetailPageTemplate
 					identifier={state.agm?.modInternalId}
 					label="MOD Internal ID"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 				/>
 			</FormSection>
 
@@ -128,7 +115,7 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Synonyms')}>
-				<SynonymsForm labelColumnSize={labelColumnSize} state={state} dispatch={dispatch} />
+				<SynonymsForm labelColumnSize={DETAIL_FIELD_LAYOUT.labelColumnSize} state={state} dispatch={dispatch} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Secondary IDs')}>
@@ -143,9 +130,7 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					vocabularyLabel="agm_subtype"
 					required={isCreate}
 					onChange={onFieldValueChange('subtype')}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 				/>
 			</FormSection>
@@ -155,28 +140,19 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					taxon={state.agm?.taxon}
 					required={isCreate}
 					onChange={onOntologyTermValueChange('taxon')}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 				/>
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Data Provider')}>
-				<DataProviderDetailPageTemplate
-					dataProvider={state.agm?.dataProvider?.abbreviation}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				<DataProviderDetailPageTemplate dataProvider={state.agm?.dataProvider?.abbreviation} {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			{/* Read only: the curation system has no cross reference editor, here or on the table. */}
 			<FormSection isVisible={!isCreate && isVisible('Cross References')}>
 				<DetailPageFieldWrapper
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-					widgetColumnSize={widgetColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					fieldName="Cross References"
 					formField={<CrossReferencesTemplate list={state.agm?.crossReferences} />}
 					showAdditionalData={false}
@@ -186,9 +162,7 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 			{/* Read only: STR associations are system-managed, with no editor here or on the table. */}
 			<FormSection isVisible={!isCreate && isVisible('Associated STRs')}>
 				<DetailPageFieldWrapper
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-					widgetColumnSize={widgetColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					fieldName="Associated STRs"
 					formField={<AssociatedSTRsTemplate list={state.agm?.agmSequenceTargetingReagentAssociations} />}
 					showAdditionalData={false}
@@ -196,43 +170,19 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Updated By')}>
-				<UserDetailPageTemplate
-					user={state.agm?.updatedBy?.uniqueId}
-					fieldName="Updated By"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				<UserDetailPageTemplate user={state.agm?.updatedBy?.uniqueId} fieldName="Updated By" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Date Updated')}>
-				<DateDetailPageTemplate
-					date={state.agm?.dateUpdated}
-					fieldName="Date Updated"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				<DateDetailPageTemplate date={state.agm?.dateUpdated} fieldName="Date Updated" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Created By')}>
-				<UserDetailPageTemplate
-					user={state.agm?.createdBy?.uniqueId}
-					fieldName="Created By"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				<UserDetailPageTemplate user={state.agm?.createdBy?.uniqueId} fieldName="Created By" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Date Created')}>
-				<DateDetailPageTemplate
-					date={state.agm?.dateCreated}
-					fieldName="Date Created"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				<DateDetailPageTemplate date={state.agm?.dateCreated} fieldName="Date Created" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Internal')}>
@@ -241,9 +191,7 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					name={'internal'}
 					label={'Internal'}
 					onChange={onFieldValueChange('internal')}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 				/>
 			</FormSection>
@@ -254,9 +202,7 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					name={'obsolete'}
 					label={'Obsolete'}
 					onChange={onFieldValueChange('obsolete')}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					{...DETAIL_FIELD_LAYOUT}
 					errorMessages={state.errorMessages}
 				/>
 			</FormSection>

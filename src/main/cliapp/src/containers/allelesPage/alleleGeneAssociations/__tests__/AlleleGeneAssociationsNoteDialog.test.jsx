@@ -36,6 +36,8 @@ const firstNote = () => ({
 	noteType: termSetTermsFor(NOTE_TYPE_SET)[0],
 	freeText: 'first note',
 	internal: false,
+	createdBy: { uniqueId: 'curator' },
+	dateCreated: '2026-01-01T00:00:00Z',
 });
 
 /** Renders the section against a stand-in for its sub-resource that keeps rows and errors in state. */
@@ -125,8 +127,14 @@ describe('the allele gene associations note pop-up', () => {
 			freeText: 'first note edited',
 			internal: true,
 		});
+		expect(getRows()[0].relatedNote).not.toHaveProperty('dataKey');
 		expect(getRows()[1].relatedNote).toBeNull();
-		expect(validate).toHaveBeenCalledWith('note', expect.objectContaining({ id: 71, freeText: 'first note edited' }));
+		expect(validate).toHaveBeenCalledWith('note', {
+			id: 71,
+			noteType: termSetTermsFor(NOTE_TYPE_SET)[1],
+			freeText: 'first note edited',
+			internal: true,
+		});
 		expect(getCellByHeader(container, 'Note', 0).textContent).toContain('Pending Edits!');
 		expect(getCellByHeader(container, 'Note', 1).textContent).not.toContain('Pending Edits!');
 	});
@@ -139,7 +147,11 @@ describe('the allele gene associations note pop-up', () => {
 		keepEdits();
 
 		await waitFor(() => expect(getRows()[1].relatedNote).toBeTruthy());
-		expect(getRows()[1].relatedNote).toMatchObject({ noteType: { name: 'comment' }, freeText: 'second note' });
+		expect(getRows()[1].relatedNote).toEqual({
+			noteType: { name: 'comment' },
+			freeText: 'second note',
+			internal: false,
+		});
 		expect(getRows()[0].relatedNote).toMatchObject(firstNote());
 	});
 
@@ -177,6 +189,22 @@ describe('the allele gene associations note pop-up', () => {
 		expect(dialogRows()).toHaveLength(1);
 		expect(getCellByHeader(container, 'Note', 0).textContent).not.toContain('Pending Edits!');
 		expect(document.body.textContent).toContain('Please fix validation errors before saving');
+	});
+
+	it('keeps the edits only once while the note is being validated', async () => {
+		let finishValidating;
+		validate.mockReturnValue(new Promise((resolve) => (finishValidating = () => resolve(VALID))));
+		const { container, getRows } = renderForm();
+
+		await openNote(container, 0);
+		typeInColumn(dialog(), 'Text', 'first note edited');
+		keepEdits();
+		await waitFor(() => expect(getButton(dialog(), 'Keep Edits')).toBeDisabled());
+		keepEdits();
+		finishValidating();
+
+		await waitFor(() => expect(getRows()[0].relatedNote.freeText).toBe('first note edited'));
+		expect(validate).toHaveBeenCalledTimes(1);
 	});
 
 	it.each([

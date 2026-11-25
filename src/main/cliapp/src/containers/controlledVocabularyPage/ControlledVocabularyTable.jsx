@@ -3,7 +3,6 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { VocabularyService } from '../../service/VocabularyService';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
 import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
@@ -48,7 +47,6 @@ export const ControlledVocabularyTable = () => {
 
 	const searchService = new SearchService();
 
-	const obsoleteTerms = useControlledVocabularyService('generic_boolean_terms');
 	let vocabularyService = new VocabularyService();
 
 	const {
@@ -262,7 +260,6 @@ export const ControlledVocabularyTable = () => {
 				newTerm={newTerm}
 				newTermDispatch={newTermDispatch}
 				vocabularies={vocabularies}
-				obsoleteTerms={obsoleteTerms}
 				vocabularyService={vocabularyService}
 				setNewTerm={(newTerm, queryClient) => setNewEntity(tableState, setTerms, newTerm, queryClient)}
 			/>

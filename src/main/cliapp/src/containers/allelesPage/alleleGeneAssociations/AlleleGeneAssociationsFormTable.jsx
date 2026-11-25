@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { RelatedNotesDialogEditOnly } from '../../../components/RelatedNotesDialogEditOnly';
+import { RelatedNotesEditDialog } from '../../../components/RelatedNotesEditDialog';
 import { ControlledVocabularyTableEditor } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
 import { AlleleGeneObjectTableEditor } from '../../../components/Editors/autocomplete/gene/AlleleGeneObjectTableEditor';
 import { SingleEvidenceCodeTableEditor } from '../../../components/Editors/autocomplete/ontology/SingleEvidenceCodeTableEditor';
@@ -50,11 +50,8 @@ export const AlleleGeneAssociationsFormTable = ({
 		dateUpdated: { value: null, matchMode: 'startsWith' },
 	});
 
-	// The shape handleRelatedNoteOpenInEdit writes and RelatedNotesDialogEditOnly reads.
-	const [relatedNotesData, setRelatedNotesData] = useState({
-		dialogIsVisible: false,
-		errorMessages,
-	});
+	// The shape handleRelatedNoteOpenInEdit writes and RelatedNotesEditDialog reads.
+	const [relatedNotesData, setRelatedNotesData] = useState({ dialog: false });
 	const onPage = (options) => {
 		setRows(options.rows);
 		setFirst(options.first);
@@ -76,10 +73,14 @@ export const AlleleGeneAssociationsFormTable = ({
 		const relatedNote = currentRow(editorOptions)?.relatedNote;
 		setRelatedNotesData({
 			originalRelatedNotes: relatedNote ? [relatedNote] : undefined,
-			dialogIsVisible: true,
-			dataKey: editorOptions.rowData?.dataKey,
-			errorMessages,
-			rowProps: editorOptions,
+			dialog: true,
+			isInEdit: true,
+			rowIndex: editorOptions.rowIndex,
+			rowKey: editorOptions.rowData?.dataKey,
+			mainRowProps: {
+				...editorOptions,
+				editorCallback: (notes) => relatedNoteOnChangeHandler(notes, editorOptions),
+			},
 		});
 	};
 
@@ -194,16 +195,16 @@ export const AlleleGeneAssociationsFormTable = ({
 				<Column field="updatedBy.uniqueId" header="Updated By" />
 				<Column field="dateUpdated" header="Date Updated" />
 			</DataTable>
-			<RelatedNotesDialogEditOnly
-				relatedNotesData={relatedNotesData}
-				setRelatedNotesData={setRelatedNotesData}
-				tableErrorMessages={errorMessages}
-				setTableErrorMessages={setErrorMessages}
-				singleValue={true}
-				onChange={relatedNoteOnChangeHandler}
-				defaultValues={{ noteType: 'comment' }}
-				errorField="relatedNote"
-				noteTypeVocabType="allele_genomic_entity_association_note_type"
+			<RelatedNotesEditDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+				noteTypeVocabularyTermSet="allele_genomic_entity_association_note_type"
+				showReferences={false}
+				singleValue
+				defaultNoteType="comment"
+				pendingEditsField="relatedNote"
 			/>
 		</>
 	);
