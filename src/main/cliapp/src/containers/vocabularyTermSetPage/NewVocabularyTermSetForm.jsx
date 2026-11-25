@@ -5,7 +5,7 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormField } from '../../components/Editors/fields/FormField';
-import { DIALOG_FIELD_LAYOUT } from '../../components/Editors/fields/dialogFieldLayout';
+import { DIALOG_FIELD_LAYOUT } from '../../components/Editors/fields/fieldLayouts';
 import { TextInput } from '../../components/Editors/widgets/TextInput';
 import { SingleAutocomplete } from '../../components/Editors/widgets/SingleAutocomplete';
 import { MultiAutocomplete } from '../../components/Editors/widgets/MultiAutocomplete';

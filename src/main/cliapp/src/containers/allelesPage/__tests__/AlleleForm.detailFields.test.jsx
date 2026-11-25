@@ -67,6 +67,13 @@ const renderForm = ({ mode = 'detail', pendingFields } = {}) => {
 };
 
 describe('<AlleleForm /> detail fields', () => {
+	it.each(['Curie', 'Taxon', 'Internal'])('lays %s out as its label, the widget, then its additional data', (label) => {
+		renderForm();
+
+		const columns = [...fieldRow(label).children].map((column) => column.className);
+		expect(columns).toEqual(['col-3', 'col-4', 'col-5']);
+	});
+
 	it('shows the loaded taxon and collection', () => {
 		renderForm();
 

@@ -519,6 +519,14 @@ describe('<NewAnnotationForm />', () => {
 	});
 
 	describe('field visibility', () => {
+		it('lays each field out as a narrow label, the widget, then its additional data', async () => {
+			renderForm();
+			await waitForForm();
+
+			const columns = [...getField('Disease').children].map((column) => column.className);
+			expect(columns).toEqual(['col-2', 'col-4', 'col-5']);
+		});
+
 		it('shows every optional field by default', async () => {
 			renderForm();
 			await waitForForm();

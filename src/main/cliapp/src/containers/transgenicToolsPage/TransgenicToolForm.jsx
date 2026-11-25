@@ -12,6 +12,7 @@ import { TransgenicToolAssociationsForm } from './detail/TransgenicToolAssociati
 import { ReferencesForm } from './detail/ReferencesForm';
 import { RelatedNotesForm } from './detail/RelatedNotesForm';
 import { CrossReferencesForm } from './detail/CrossReferencesForm';
+import { DETAIL_FIELD_LAYOUT } from '../../components/Editors/fields/fieldLayouts';
 
 const ENTITY_KEY = 'transgenicTool';
 
@@ -56,12 +57,6 @@ export const TRANSGENIC_TOOL_CREATE_TOGGLEABLE_FIELDS = [
 	'Internal',
 ];
 
-const labelColumnSize = 'col-3';
-const widgetColumnSize = 'col-4';
-const fieldDetailsColumnSize = 'col-5';
-
-const columnSizes = { labelColumnSize, widgetColumnSize, fieldDetailsColumnSize };
-
 /**
  * The sections of a transgenic tool, each of which the curator can hide through the field menu: on the detail page
  * (SCRUM-6655) and, without the fields the API sets and in the ticket's order, on the create page (SCRUM-6691).
@@ -89,7 +84,7 @@ export const TransgenicToolForm = ({ state, dispatch, associations, isVisible, m
 			label={label}
 			onChange={onBooleanChange(field)}
 			errorMessages={state.errorMessages}
-			{...columnSizes}
+			{...DETAIL_FIELD_LAYOUT}
 		/>
 	);
 
@@ -98,7 +93,7 @@ export const TransgenicToolForm = ({ state, dispatch, associations, isVisible, m
 			<IdentifierDetailPageTemplate
 				identifier={transgenicTool?.[field]}
 				label={label}
-				{...columnSizes}
+				{...DETAIL_FIELD_LAYOUT}
 				showAdditionalData={false}
 			/>
 		</FormSection>
@@ -143,7 +138,7 @@ export const TransgenicToolForm = ({ state, dispatch, associations, isVisible, m
 				<SynonymsForm state={state} dispatch={dispatch} />
 			</FormSection>
 			<FormSection isVisible={showsField('Secondary IDs')}>
-				<SecondaryIdsForm state={state} dispatch={dispatch} {...columnSizes} />
+				<SecondaryIdsForm state={state} dispatch={dispatch} {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 			<FormSection isVisible={showsField('Transgenic Tool Uses')}>
 				<UsesForm state={state} dispatch={dispatch} />
@@ -156,23 +151,34 @@ export const TransgenicToolForm = ({ state, dispatch, associations, isVisible, m
 				<RelatedNotesForm state={state} dispatch={dispatch} />
 			</FormSection>
 			<FormSection isVisible={showsField('Data Provider')}>
-				<DataProviderDetailPageTemplate dataProvider={transgenicTool?.dataProvider?.abbreviation} {...columnSizes} />
+				<DataProviderDetailPageTemplate
+					dataProvider={transgenicTool?.dataProvider?.abbreviation}
+					{...DETAIL_FIELD_LAYOUT}
+				/>
 			</FormSection>
 			<FormSection isVisible={showsField('Cross References')}>
 				<CrossReferencesForm state={state} dispatch={dispatch} />
 			</FormSection>
 			{!isDetail && referencesSection}
 			<FormSection isVisible={showsField('Updated By')}>
-				<UserDetailPageTemplate user={transgenicTool?.updatedBy?.uniqueId} fieldName="Updated By" {...columnSizes} />
+				<UserDetailPageTemplate
+					user={transgenicTool?.updatedBy?.uniqueId}
+					fieldName="Updated By"
+					{...DETAIL_FIELD_LAYOUT}
+				/>
 			</FormSection>
 			<FormSection isVisible={showsField('Date Updated')}>
-				<DateDetailPageTemplate date={transgenicTool?.dateUpdated} fieldName="Date Updated" {...columnSizes} />
+				<DateDetailPageTemplate date={transgenicTool?.dateUpdated} fieldName="Date Updated" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 			<FormSection isVisible={showsField('Created By')}>
-				<UserDetailPageTemplate user={transgenicTool?.createdBy?.uniqueId} fieldName="Created By" {...columnSizes} />
+				<UserDetailPageTemplate
+					user={transgenicTool?.createdBy?.uniqueId}
+					fieldName="Created By"
+					{...DETAIL_FIELD_LAYOUT}
+				/>
 			</FormSection>
 			<FormSection isVisible={showsField('Date Created')}>
-				<DateDetailPageTemplate date={transgenicTool?.dateCreated} fieldName="Date Created" {...columnSizes} />
+				<DateDetailPageTemplate date={transgenicTool?.dateCreated} fieldName="Date Created" {...DETAIL_FIELD_LAYOUT} />
 			</FormSection>
 			<FormSection isVisible={showsField('Placeholder')}>{booleanField('placeholder', 'Placeholder')}</FormSection>
 			<FormSection isVisible={showsField('Internal')}>{booleanField('internal', 'Internal')}</FormSection>

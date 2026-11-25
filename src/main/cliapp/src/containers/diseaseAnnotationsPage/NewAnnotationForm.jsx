@@ -19,6 +19,7 @@ import { VocabularyMultiSelect } from '../../components/Editors/widgets/Vocabula
 import { BooleanSelect } from '../../components/Editors/widgets/BooleanSelect';
 import { FieldErrors } from '../../components/Editors/fields/FieldErrors';
 import { normalizeError } from '../../components/Editors/fields/normalizeError';
+import { NEW_ANNOTATION_FIELD_LAYOUT } from '../../components/Editors/fields/fieldLayouts';
 import { ExperimentsSearchService } from '../../service/ExperimentsSearchService';
 import {
 	diseaseAnnotationSubjectSearch,
@@ -74,20 +75,8 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 import { Endpoints } from '../../constants/Endpoints';
 
-const labelColumnSize = 'col-2';
-const widgetColumnSize = 'col-4';
-const fieldDetailsColumnSize = 'col-5';
-
 // NOT's one option; clearing it leaves the annotation un-negated
 const NOT_OPTIONS = [{ name: 'NOT', value: true }];
-
-// FormField layout for this dialog's fields: label, widget, then the field's additional data.
-const ANNOTATION_FIELD_LAYOUT = {
-	labelColumnSize,
-	widgetColumnSize,
-	fieldDetailsColumnSize,
-	labelClassName: 'text-base font-semibold m-0',
-};
 
 /**
  * The New Annotation dialog on the Disease Annotations table, also opened pre-filled by Duplicate. The subject's
@@ -330,7 +319,7 @@ export const NewAnnotationForm = ({
 		value: newAnnotation[field],
 		onChange,
 		errors: fieldErrors,
-		...ANNOTATION_FIELD_LAYOUT,
+		...NEW_ANNOTATION_FIELD_LAYOUT,
 	});
 
 	const dialogFooter = (
@@ -552,8 +541,8 @@ export const NewAnnotationForm = ({
 						{selectedFormFields?.includes('Related Notes') && (
 							<>
 								<div className="grid">
-									<div className={labelColumnSize}>
-										<h2 className={ANNOTATION_FIELD_LAYOUT.labelClassName}>Related Notes</h2>
+									<div className={NEW_ANNOTATION_FIELD_LAYOUT.labelColumnSize}>
+										<h2 className={NEW_ANNOTATION_FIELD_LAYOUT.labelClassName}>Related Notes</h2>
 									</div>
 									<div
 										className={classNames('col-9', {
@@ -577,8 +566,8 @@ export const NewAnnotationForm = ({
 						{selectedFormFields?.includes('Experimental Conditions') && (
 							<>
 								<div className="grid">
-									<div className={labelColumnSize}>
-										<h2 className={ANNOTATION_FIELD_LAYOUT.labelClassName}>Experimental Conditions</h2>
+									<div className={NEW_ANNOTATION_FIELD_LAYOUT.labelColumnSize}>
+										<h2 className={NEW_ANNOTATION_FIELD_LAYOUT.labelClassName}>Experimental Conditions</h2>
 									</div>
 									<div className={classNames('col-9')}>
 										<ConditionRelationsForm
@@ -603,7 +592,7 @@ export const NewAnnotationForm = ({
 								onChange={(experiment) => newAnnotationDispatch({ type: 'EDIT_EXPERIMENT', value: experiment })}
 								errors={fieldErrors}
 								errorField="conditionRelations"
-								{...ANNOTATION_FIELD_LAYOUT}
+								{...NEW_ANNOTATION_FIELD_LAYOUT}
 							>
 								{(binding) => (
 									<VocabularySelect
