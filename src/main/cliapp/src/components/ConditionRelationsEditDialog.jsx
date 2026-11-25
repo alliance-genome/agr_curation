@@ -17,6 +17,7 @@ import { ControlledVocabularyTableEditor } from './Editors/dropdown/vocabulary/C
 import { ConditionsTableEditor } from './Editors/autocomplete/experimentalCondition/ConditionsTableEditor';
 import { conditionsDetailedSearchConfig } from './Editors/autocomplete/experimentalCondition/utils';
 import { BooleanTableEditor } from './Editors/dropdown/boolean/BooleanTableEditor';
+import { markPendingEdits } from '../utils/pendingEdits';
 
 /**
  * Dialog for editing a disease annotation row's condition relations. Edits stay local until Keep Edits validates
@@ -118,14 +119,7 @@ export const ConditionRelationsEditDialog = ({
 			mainRowProps.editorCallback(_localConditionRelations);
 		}
 
-		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
-		let messageObject = {
-			severity: 'warn',
-			message: 'Pending Edits!',
-		};
-		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]['conditionRelations'] = messageObject;
-		setErrorMessagesMainRow({ ...errorMessagesCopy });
+		setErrorMessagesMainRow(markPendingEdits(errorMessagesMainRow, rowIndex, 'conditionRelations'));
 
 		setOriginalConditionRelationsData((originalConditionRelationsData) => {
 			return {

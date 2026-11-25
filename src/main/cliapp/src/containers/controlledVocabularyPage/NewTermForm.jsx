@@ -7,6 +7,7 @@ import { Toast } from 'primereact/toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { classNames } from 'primereact/utils';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
+import { BooleanSelect } from '../../components/Editors/widgets/BooleanSelect';
 
 export const NewTermForm = ({
 	newTermDialog,
@@ -15,7 +16,6 @@ export const NewTermForm = ({
 	setNewTerm,
 	newTermDispatch,
 	vocabularies,
-	obsoleteTerms,
 	vocabularyService,
 }) => {
 	const toast_success = useRef(null);
@@ -144,17 +144,13 @@ export const NewTermForm = ({
 							</div>
 							<div className="field">
 								<label htmlFor="obsolete">Obsolete</label>
-								<Dropdown
+								<BooleanSelect
 									id="obsolete"
-									options={obsoleteTerms?.terms || []}
 									value={newTerm.obsolete}
-									placeholder={'Select Obsolete'}
-									name="obsolete"
-									optionLabel="text"
-									optionValue="name"
-									onChange={onChange}
-									required
-									className={classNames({ 'p-invalid': submitted && newTerm.obsolete === undefined }, 'p-col-12')}
+									placeholder="Select Obsolete"
+									name="Obsolete"
+									onChange={(value) => newTermDispatch({ field: 'obsolete', value })}
+									invalid={submitted && newTerm.obsolete === undefined}
 								/>
 								{submitted && newTerm.obsolete === undefined && (
 									<small className="p-error">Obsolete is required.</small>

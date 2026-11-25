@@ -1,34 +1,61 @@
 import React, { useRef, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { MultiSelect } from 'primereact/multiselect';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
-import { NotEditor } from '../../components/Editors/dropdown/not/NotEditor';
 import { classNames } from 'primereact/utils';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
-import { LiteratureAutocompleteTemplate } from '../../components/Editors/autocomplete/base/templates/LiteratureAutocompleteTemplate';
-import { SubjectAutocompleteTemplate } from '../../components/Editors/autocomplete/base/templates/SubjectAutocompleteTemplate';
-import { EvidenceAutocompleteTemplate } from '../../components/Editors/autocomplete/base/templates/EvidenceAutocompleteTemplate';
 import { RelatedNotesForm } from './RelatedNotesForm';
 import { ConditionRelationsForm } from './ConditionRelationsForm';
-import { ConditionHandleFormDropdown } from '../../components/Editors/dropdown/conditionHandle/ConditionHandleFormDropdown';
-import { ControlledVocabularyFormDropdown } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyFormDropdown';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { ControlledVocabularyFormMultiSelectDropdown } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyFormMultiSelectDropdown';
-import { AutocompleteFormEditor } from '../../components/Editors/autocomplete/base/AutocompleteFormEditor';
+import { validateTable } from '../../utils/utils';
+import { FormField } from '../../components/Editors/fields/FormField';
+import { SingleAutocomplete } from '../../components/Editors/widgets/SingleAutocomplete';
+import { MultiAutocomplete } from '../../components/Editors/widgets/MultiAutocomplete';
+import { VocabularySelect } from '../../components/Editors/widgets/VocabularySelect';
+import { VocabularyMultiSelect } from '../../components/Editors/widgets/VocabularyMultiSelect';
+import { BooleanSelect } from '../../components/Editors/widgets/BooleanSelect';
+import { FieldErrors } from '../../components/Editors/fields/FieldErrors';
+import { normalizeError } from '../../components/Editors/fields/normalizeError';
+import { NEW_ANNOTATION_FIELD_LAYOUT } from '../../components/Editors/fields/fieldLayouts';
+import { ExperimentsSearchService } from '../../service/ExperimentsSearchService';
 import {
-	autocompleteSearch,
-	buildAutocompleteFilter,
-	buildCuratorSpeciesFilter,
-	validateRequiredFields,
-	validateFormBioEntityFields,
-	validateTable,
-} from '../../utils/utils';
-import { AutocompleteFormMultiEditor } from '../../components/Editors/autocomplete/base/AutocompleteFormMultiEditor';
+	diseaseAnnotationSubjectSearch,
+	diseaseAnnotationSubjectSearchConfig,
+} from '../../components/Editors/autocomplete/biologicalEntity/utils';
+import {
+	diseaseSearch,
+	evidenceCodesSearch,
+	evidenceCodesSearchConfig,
+} from '../../components/Editors/autocomplete/ontology/utils';
+import {
+	isPickedReference,
+	singleReferenceSearch,
+	singleReferenceSearchConfig,
+} from '../../components/Editors/autocomplete/references/utils';
+import {
+	assertedGenesSearch,
+	assertedGenesSearchConfig,
+	diseaseGeneticModifierGenesSearch,
+	diseaseGeneticModifierGenesSearchConfig,
+	withSearch,
+	withSearchConfig,
+} from '../../components/Editors/autocomplete/gene/utils';
+import {
+	assertedAllelesSearch,
+	assertedAllelesSearchConfig,
+	diseaseGeneticModifierAllelesSearch,
+	diseaseGeneticModifierAllelesSearchConfig,
+} from '../../components/Editors/autocomplete/allele/utils';
+import {
+	diseaseGeneticModifierAgmsSearch,
+	diseaseGeneticModifierAgmsSearchConfig,
+	sgdStrainBackgroundSearch,
+	sgdStrainBackgroundSearchConfig,
+} from '../../components/Editors/autocomplete/agm/utils';
+import { findMissingRequiredFields, findUnpickedFields } from './newAnnotationValidation';
 import { SubjectAdditionalFieldData } from '../../components/FieldData/SubjectAdditionalFieldData';
 import { AssertedAllelesAdditionalFieldData } from '../../components/FieldData/AssertedAllelesAdditionalFieldData';
 import { DiseaseAdditionalFieldData } from '../../components/FieldData/DiseaseAdditionalFieldData';
@@ -47,12 +74,28 @@ import { getEffectiveStaffGroups } from '../../utils/affiliation';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 import { Endpoints } from '../../constants/Endpoints';
-import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../constants/FilterFields';
 
+// NOT's one option; clearing it leaves the annotation un-negated
+const NOT_OPTIONS = [{ name: 'NOT', value: true }];
+
+/**
+ * The New Annotation dialog on the Disease Annotations table, also opened pre-filled by Duplicate. The subject's
+ * type decides which asserted fields are open and which disease relations are offered. Save checks the required
+ * fields, ZFIN's required experiment and that the subject, SGD strain background and reference were picked from the
+ * suggestions, then creates the annotation; Save & Add Another keeps the form filled. Optional fields show per the
+ * curator's saved form settings.
+ *
+ * @param {object} newAnnotationState - the form's reducer state
+ * @param {Function} newAnnotationDispatch - the form's reducer dispatch
+ * @param {object} [diseaseAnnotationService] - the service that creates the annotation
+ * @param {object[]} relationsTerms - every disease relation, offered until a subject is picked
+ * @param {(annotation: object, queryClient: object) => void} setNewDiseaseAnnotation - called with the created
+ *   annotation
+ * @returns {JSX.Element}
+ */
 export const NewAnnotationForm = ({
 	newAnnotationState,
 	newAnnotationDispatch,
-	searchService,
 	diseaseAnnotationService,
 	relationsTerms,
 	setNewDiseaseAnnotation,
@@ -60,11 +103,6 @@ export const NewAnnotationForm = ({
 	const queryClient = useQueryClient();
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
-	const withRef = useRef(null);
-	const assertedGenesRef = useRef(null);
-	const assertedAllelesRef = useRef(null);
-	const evidenceCodesRef = useRef(null);
-	const experimentsRef = useRef(null);
 	const {
 		newAnnotation,
 		errorMessages,
@@ -83,14 +121,14 @@ export const NewAnnotationForm = ({
 	const geneticSexTerms = useControlledVocabularyService('genetic_sex');
 	const diseaseQualifiersTerms = useControlledVocabularyService('disease_qualifier');
 	const annotationTypeTerms = useControlledVocabularyService('annotation_type');
-	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
 	const agmRelationTerms = useVocabularyTermSetService('agm_disease_relation');
 	const alleleRelationTerms = useVocabularyTermSetService('allele_disease_relation');
 	const geneRelationTerms = useVocabularyTermSetService('gene_disease_relation');
 	const [uiErrorMessages, setUiErrorMessages] = useState({});
-	const [validRelationTerms, setValidRelationTerms] = useState(relationsTerms);
-	const areUiErrors = useRef(false);
+	// Changes on Clear, so the fields start again with no typed text left in them
+	const [formKey, setFormKey] = useState(0);
+	const [experimentOptions, setExperimentOptions] = useState([]);
 	let newAnnotationOptionalFields = [
 		'Asserted Genes',
 		'Asserted Alleles',
@@ -127,13 +165,21 @@ export const NewAnnotationForm = ({
 		},
 	});
 
+	const relationTermsBySubjectType = {
+		Gene: geneRelationTerms,
+		Allele: alleleRelationTerms,
+		AffectedGenomicModel: agmRelationTerms,
+	};
+	const relationTerms = relationTermsBySubjectType[newAnnotation.diseaseAnnotationSubject?.type] ?? relationsTerms;
+	const fieldErrors = { ...errorMessages, ...uiErrorMessages };
+
 	const hideDialog = () => {
 		newAnnotationDispatch({ type: 'RESET' });
 		newAnnotationDispatch({ type: 'SET_IS_ENABLED', value: false });
 		newAnnotationDispatch({ type: 'SET_IS_ASSERTED_ALLELE_ENABLED', value: false });
 		newAnnotationDispatch({ type: 'SET_IS_ASSERTED_GENE_ENABLED', value: false });
 		setUiErrorMessages({});
-		setValidRelationTerms(relationsTerms);
+		setExperimentOptions([]);
 	};
 
 	const handleSubmit = async (event, closeAfterSubmit = true) => {
@@ -152,10 +198,9 @@ export const NewAnnotationForm = ({
 			newAnnotationDispatch
 		);
 
-		areUiErrors.current = false;
-		validateRequiredFields(newAnnotation, uiErrorMessages, setUiErrorMessages, areUiErrors, mod);
-		validateFormBioEntityFields(newAnnotation, uiErrorMessages, setUiErrorMessages, areUiErrors);
-		if (areUiErrors.current) {
+		const uiErrors = { ...findMissingRequiredFields(newAnnotation, mod), ...findUnpickedFields(newAnnotation) };
+		setUiErrorMessages(uiErrors);
+		if (Object.keys(uiErrors).length > 0) {
 			newAnnotationDispatch({ type: 'SET_IS_ENABLED', value: true });
 
 			return;
@@ -174,7 +219,6 @@ export const NewAnnotationForm = ({
 						setUiErrorMessages({});
 					}
 
-					//TODO: check this data
 					setNewDiseaseAnnotation(data.data.entity, queryClient);
 				}
 			},
@@ -201,231 +245,82 @@ export const NewAnnotationForm = ({
 	};
 
 	const handleClear = () => {
-		//this manually resets the value of the input text in autocomplete fields with multiple values and the experiments dropdown
-		if (withRef.current?.getInput()) withRef.current.getInput().value = '';
-		if (evidenceCodesRef.current?.getInput().value) evidenceCodesRef.current.getInput().value = '';
 		newAnnotationDispatch({ type: 'CLEAR' });
 		newAnnotationDispatch({ type: 'SET_IS_ENABLED', value: false });
 		newAnnotationDispatch({ type: 'SET_IS_ASSERTED_GENE_ENABLED', value: false });
 		newAnnotationDispatch({ type: 'SET_IS_ASSERTED_ALLELE_ENABLED', value: false });
 
 		setUiErrorMessages({});
-		setValidRelationTerms(relationsTerms);
+		setExperimentOptions([]);
+		setFormKey((key) => key + 1);
 	};
 
 	const handleSubmitAndAdd = (event) => {
 		handleSubmit(event, false);
 	};
 
-	const onSingleReferenceChange = (event) => {
+	const editField = (field) => (value) => newAnnotationDispatch({ type: 'EDIT', field, value });
+
+	// Editing the subject, SGD strain background or reference clears the messages from the last Save
+	const editFieldClearingUiErrors = (field) => (value) => {
 		setUiErrorMessages({});
+		editField(field)(value);
+	};
+
+	// A new reference has its own experiments, loaded when Experiments is opened
+	const onReferenceChange = (reference) => {
+		setExperimentOptions([]);
+		editFieldClearingUiErrors('evidenceItem')(reference);
+	};
+
+	const onSubjectChange = (subject) => {
+		const subjectType = subject?.type;
+		newAnnotationDispatch({ type: 'SET_IS_ENABLED', value: subject != null });
 		newAnnotationDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.target.value,
+			type: 'SET_IS_ASSERTED_GENE_ENABLED',
+			value: subjectType === 'Allele' || subjectType === 'AffectedGenomicModel',
 		});
+		newAnnotationDispatch({ type: 'SET_IS_ASSERTED_ALLELE_ENABLED', value: subjectType === 'AffectedGenomicModel' });
+		editFieldClearingUiErrors('diseaseAnnotationSubject')(subject);
 	};
 
-	const referenceSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.referenceAutocompleteConfig);
-		const endpoint = Endpoints.Document.LITERATURE_REFERENCE;
-		const filterName = 'curieFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	const isExperimentRequired = mod?.includes('ZFINStaff');
+
+	// The reference whose experiments were last asked for, so a late answer for another reference is ignored
+	const experimentsReferenceCurie = useRef(null);
+
+	const loadExperimentOptions = () => {
+		const referenceCurie = newAnnotation.evidenceItem?.curie;
+		experimentsReferenceCurie.current = referenceCurie;
+		setExperimentOptions([]);
+		new ExperimentsSearchService()
+			.findExperiments(Endpoints.Annotation.CONDITION_RELATION, 15, 0, { 'singleReference.curie': referenceCurie })
+			.then((data) => {
+				if (experimentsReferenceCurie.current === referenceCurie) setExperimentOptions(data.results ?? []);
+			})
+			.catch(() => {
+				if (experimentsReferenceCurie.current === referenceCurie) setExperimentOptions([]);
+			});
 	};
 
-	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig);
-		const endpoint = Endpoints.Entity.AGM;
-		const filterName = 'sgdStrainBackgroundFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		// SGD strain background is always Saccharomyces cerevisiae S288C; match by
-		// taxon curie (exact) rather than the brittle taxon.name full-text filter.
-		const otherFilters = {
-			taxonFilter: {
-				'taxon.curie': {
-					queryString: 'NCBITaxon:559292',
-					useKeywordFields: true,
-				},
-			},
-		};
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	};
-
-	const geneticModifierAgmsSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig);
-		const endpoint = Endpoints.Entity.AGM;
-		const filterName = 'geneticModifierAgmsFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, buildCuratorSpeciesFilter());
-	};
-
-	const geneticModifierAllelesSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig);
-		const endpoint = Endpoints.Entity.ALLELE;
-		const filterName = 'geneticModifierAllelesFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, buildCuratorSpeciesFilter());
-	};
-
-	const geneticModifierGenesSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.geneAutocompleteConfig);
-		const endpoint = Endpoints.Entity.GENE;
-		const filterName = 'geneticModifierGenesFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, buildCuratorSpeciesFilter());
-	};
-
-	const onSubjectChange = (event) => {
-		setUiErrorMessages({});
-		if (event.target && event.target.value !== '' && event.target.value != null) {
-			newAnnotationDispatch({ type: 'SET_IS_ENABLED', value: true });
-		} else {
-			newAnnotationDispatch({ type: 'SET_IS_ENABLED', value: false });
-		}
-		if (
-			event.target.value &&
-			event.target.value.type &&
-			(event.target.value.type === 'Allele' || event.target.value.type === 'AffectedGenomicModel')
-		) {
-			newAnnotationDispatch({ type: 'SET_IS_ASSERTED_GENE_ENABLED', value: true });
-		} else {
-			newAnnotationDispatch({ type: 'SET_IS_ASSERTED_GENE_ENABLED', value: false });
-		}
-		if (event.target.value && event.target.value.type && event.target.value.type === 'AffectedGenomicModel') {
-			newAnnotationDispatch({ type: 'SET_IS_ASSERTED_ALLELE_ENABLED', value: true });
-		} else {
-			newAnnotationDispatch({ type: 'SET_IS_ASSERTED_ALLELE_ENABLED', value: false });
-		}
-
-		if (event.target?.value?.type === 'Gene') {
-			setValidRelationTerms(geneRelationTerms);
-		} else if (event.target?.value?.type === 'Allele') {
-			setValidRelationTerms(alleleRelationTerms);
-		} else if (event.target?.value?.type === 'AffectedGenomicModel') {
-			setValidRelationTerms(agmRelationTerms);
-		} else {
-			setValidRelationTerms(relationsTerms);
-		}
-
-		newAnnotationDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.target.value,
-		});
-	};
-
-	const subjectSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig);
-		const endpoint = Endpoints.Entity.BIOLOGICAL_ENTITY;
-		const filterName = 'diseaseAnnotationSubjectFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, buildCuratorSpeciesFilter());
-	};
-
-	const onDiseaseChange = (event) => {
-		/*const curie = event.value.curie;
-		const stringValue = event.value;
-		const value = typeof event.value === "string" ? {curie: stringValue} : {curie};*/
-
-		newAnnotationDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.value,
-		});
-	};
-
-	const diseaseSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.ontologyTermAutocompleteConfig);
-		const endpoint = Endpoints.Ontology.DO;
-		const filterName = 'diseaseFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const onDropdownFieldChange = (event) => {
-		newAnnotationDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.target.value,
-		});
-	};
-
-	const onDropdownExperimentsFieldChange = (event) => {
-		newAnnotationDispatch({
-			type: 'EDIT_EXPERIMENT',
-			field: event.target.name,
-			value: event.target.value,
-		});
-	};
-
-	const onArrayFieldChange = (event) => {
-		newAnnotationDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.target.value,
-		});
-	};
-
-	const onControlledVocabChange = (event) => {
-		newAnnotationDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.target.value,
-		});
-	};
 	const isExperimentEnabled = () => {
 		return (
 			//only enabled if a reference is selected from suggestions and condition relation table isn't visible
-			typeof newAnnotation.evidenceItem === 'object' &&
-			newAnnotation.evidenceItem.curie !== '' &&
-			!showConditionRelations
+			isPickedReference(newAnnotation.evidenceItem) && !showConditionRelations
 		);
 	};
 
 	const isConditionRelationButtonEnabled = () => {
 		return newAnnotation.conditionRelations?.[0] && newAnnotation.conditionRelations?.[0].handle;
 	};
-	const evidenceSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.evidenceCodeAutocompleteConfig);
-		const endpoint = Endpoints.Ontology.ECO;
-		const filterName = 'evidenceFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const otherFilters = {
-			subsetFilter: {
-				subsets: {
-					queryString: 'agr_eco_terms',
-				},
-			},
-		};
 
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	};
-
-	const withSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.geneAutocompleteConfig);
-		const endpoint = Endpoints.Entity.GENE;
-		const filterName = 'withFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const otherFilters = {
-			taxonFilter: {
-				'taxon.curie': {
-					queryString: 'NCBITaxon:9606',
-				},
-			},
-		};
-
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	};
+	const fieldProps = (field, onChange = editField(field)) => ({
+		name: field,
+		value: newAnnotation[field],
+		onChange,
+		errors: fieldErrors,
+		...NEW_ANNOTATION_FIELD_LAYOUT,
+	});
 
 	const dialogFooter = (
 		<>
@@ -454,24 +349,6 @@ export const NewAnnotationForm = ({
 			</Splitter>
 		</>
 	);
-
-	const assertedGenesSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.assertedGenesAutocompleteConfig);
-		const endpoint = Endpoints.Entity.GENE;
-		const filterName = 'assertedGenesFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, buildCuratorSpeciesFilter());
-	};
-
-	const assertedAllelesSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig);
-		const endpoint = Endpoints.Entity.ALLELE;
-		const filterName = 'assertedAllelesFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, buildCuratorSpeciesFilter());
-	};
 
 	const updateFormFields = (updatedFields) => {
 		let updatedSettings = { ...defaultUserSettings, selectedFormFields: updatedFields };
@@ -519,12 +396,6 @@ export const NewAnnotationForm = ({
 		</>
 	);
 
-	const labelColumnSize = 'col-2';
-	const widgetColumnSize = 'col-4';
-	const fieldDetailsColumnSize = 'col-5';
-	const requiredfield = <font color={'red'}>*</font>;
-	let required = '';
-
 	return (
 		<div>
 			<Toast ref={toast_error} position="top-left" />
@@ -540,285 +411,138 @@ export const NewAnnotationForm = ({
 				maximizable
 			>
 				<ErrorBoundary>
-					<form>
-						<div className="grid">
-							<div className={labelColumnSize}>
-								<label htmlFor="diseaseAnnotationSubject">
-									<font color={'red'}>*</font>Subject
-								</label>
-							</div>
-							<div className={widgetColumnSize}>
-								<AutocompleteFormEditor
-									initialValue={newAnnotation.diseaseAnnotationSubject}
-									search={subjectSearch}
-									fieldName="diseaseAnnotationSubject"
+					<form key={formKey}>
+						<FormField
+							label="Subject"
+							required
+							{...fieldProps('diseaseAnnotationSubject', onSubjectChange)}
+							additionalDataField={<SubjectAdditionalFieldData fieldData={newAnnotation.diseaseAnnotationSubject} />}
+						>
+							{(binding) => (
+								<SingleAutocomplete
+									{...binding}
+									search={diseaseAnnotationSubjectSearch}
 									subField="primaryExternalId"
-									name="diseaseAnnotationSubject"
-									searchService={searchService}
-									onValueChangeHandler={onSubjectChange}
-									valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-										<SubjectAutocompleteTemplate
-											item={item}
-											setAutocompleteHoverItem={setAutocompleteHoverItem}
-											op={op}
-											query={query}
-										/>
-									)}
-									classNames={classNames({ 'p-invalid': submitted && errorMessages.diseaseAnnotationSubject })}
+									valueDisplay={diseaseAnnotationSubjectSearchConfig.valueDisplay}
 								/>
-							</div>
-							<div className={fieldDetailsColumnSize}>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'diseaseAnnotationSubject'} />
-								<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={'diseaseAnnotationSubject'} />
-								<SubjectAdditionalFieldData fieldData={newAnnotation.diseaseAnnotationSubject} />
-							</div>
-						</div>
+							)}
+						</FormField>
 
 						{selectedFormFields?.includes('Asserted Genes') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="assertedGenes">Asserted Genes</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<AutocompleteFormMultiEditor
-											customRef={assertedGenesRef}
-											search={assertedGenesSearch}
-											name="assertedGenes"
-											subField="primaryExternalId"
-											label="Asserted Genes"
-											fieldName="assertedGenes"
-											disabled={!isAssertedGeneEnabled}
-											initialValue={newAnnotation.assertedGenes}
-											onValueChangeHandler={onArrayFieldChange}
-											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-												<SubjectAutocompleteTemplate
-													item={item}
-													setAutocompleteHoverItem={setAutocompleteHoverItem}
-													op={op}
-													query={query}
-												/>
-											)}
-											classNames={classNames({ 'p-invalid': submitted && errorMessages.assertedGenes })}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'assertedGenes'} />
-										<AssertedGenesAdditionalFieldData fieldData={newAnnotation.assertedGenes} />
-									</div>
-								</div>
-							</>
+							<FormField
+								label="Asserted Genes"
+								{...fieldProps('assertedGenes')}
+								additionalDataField={<AssertedGenesAdditionalFieldData fieldData={newAnnotation.assertedGenes} />}
+							>
+								{(binding) => (
+									<MultiAutocomplete
+										{...binding}
+										search={assertedGenesSearch}
+										subField="primaryExternalId"
+										valueDisplay={assertedGenesSearchConfig.valueDisplay}
+										disabled={!isAssertedGeneEnabled}
+									/>
+								)}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('Asserted Alleles') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="assertedAlleles">Asserted Alleles</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<AutocompleteFormMultiEditor
-											customRef={assertedAllelesRef}
-											search={assertedAllelesSearch}
-											name="assertedAlleles"
-											label="Asserted Alleles"
-											fieldName="assertedAlleles"
-											subField="primaryExternalId"
-											disabled={!isAssertedAlleleEnabled}
-											initialValue={newAnnotation.assertedAlleles}
-											onValueChangeHandler={onArrayFieldChange}
-											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-												<SubjectAutocompleteTemplate
-													item={item}
-													setAutocompleteHoverItem={setAutocompleteHoverItem}
-													op={op}
-													query={query}
-												/>
-											)}
-											classNames={classNames({ 'p-invalid': submitted && errorMessages.assertedAlleles })}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'assertedAlleles'} />
-										<AssertedAllelesAdditionalFieldData fieldData={newAnnotation.assertedAlleles} />
-									</div>
-								</div>
-							</>
+							<FormField
+								label="Asserted Alleles"
+								{...fieldProps('assertedAlleles')}
+								additionalDataField={<AssertedAllelesAdditionalFieldData fieldData={newAnnotation.assertedAlleles} />}
+							>
+								{(binding) => (
+									<MultiAutocomplete
+										{...binding}
+										search={assertedAllelesSearch}
+										subField="primaryExternalId"
+										valueDisplay={assertedAllelesSearchConfig.valueDisplay}
+										disabled={!isAssertedAlleleEnabled}
+									/>
+								)}
+							</FormField>
 						)}
 
-						<div className="grid">
-							<div className={labelColumnSize}>
-								<label htmlFor="relation">
-									<font color={'red'}>*</font>Disease Relation
-								</label>
-							</div>
-							<div className={widgetColumnSize}>
-								<Dropdown
-									options={validRelationTerms || relationsTerms || []}
-									value={newAnnotation.relation}
-									name="relation"
-									optionLabel="name"
-									onChange={onDropdownFieldChange}
-									className={classNames({ 'p-invalid': submitted && errorMessages.relation })}
-									placeholder={newAnnotation.relation?.name}
-								/>
-							</div>
-							<div className={fieldDetailsColumnSize}>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'relation'} />
-								<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={'relation'} />
-							</div>
-						</div>
+						<FormField label="Disease Relation" required {...fieldProps('relation')}>
+							{(binding) => <VocabularySelect {...binding} options={relationTerms} dataKey="name" />}
+						</FormField>
 
 						{selectedFormFields?.includes('NOT') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="negated">NOT</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<NotEditor
-											value={newAnnotation.negated}
-											editorChange={(newValue) =>
-												onDropdownFieldChange({ target: { name: 'negated', value: newValue } })
-											}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'negated'} />
-									</div>
-								</div>
-							</>
+							<FormField label="NOT" {...fieldProps('negated', (value) => editField('negated')(value ?? false))}>
+								{(binding) => (
+									<VocabularySelect
+										{...binding}
+										value={binding.value || null}
+										options={NOT_OPTIONS}
+										optionValue="value"
+										showClear
+									/>
+								)}
+							</FormField>
 						)}
 
-						<div className="grid">
-							<div className={labelColumnSize}>
-								<label htmlFor="diseaseAnnotationObject">
-									<font color={'red'}>*</font>Disease
-								</label>
-							</div>
-							<div className={widgetColumnSize}>
-								<AutocompleteFormEditor
-									name="diseaseAnnotationObject"
-									search={diseaseSearch}
-									label="Disease"
-									fieldName="diseaseAnnotationObject"
-									initialValue={newAnnotation.diseaseAnnotationObject}
-									onValueChangeHandler={onDiseaseChange}
-									classNames={classNames({ 'p-invalid': submitted && errorMessages.diseaseAnnotationObject })}
-								/>
-							</div>
-							<div className={fieldDetailsColumnSize}>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'diseaseAnnotationObject'} />
-								<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={'diseaseAnnotationObject'} />
-								<DiseaseAdditionalFieldData fieldData={newAnnotation.diseaseAnnotationObject} />
-							</div>
-						</div>
+						<FormField
+							label="Disease"
+							required
+							{...fieldProps('diseaseAnnotationObject')}
+							additionalDataField={<DiseaseAdditionalFieldData fieldData={newAnnotation.diseaseAnnotationObject} />}
+						>
+							{(binding) => <SingleAutocomplete {...binding} search={diseaseSearch} />}
+						</FormField>
 
-						<div className="grid">
-							<div className={labelColumnSize}>
-								<label htmlFor="evidenceItem">
-									<font color={'red'}>*</font>Reference
-								</label>
-							</div>
-							<div className={widgetColumnSize}>
-								<AutocompleteFormEditor
-									search={referenceSearch}
-									name="evidenceItem"
-									label="Reference"
-									fieldName="evidenceItem"
-									initialValue={newAnnotation.evidenceItem}
-									onValueChangeHandler={onSingleReferenceChange}
-									valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-										<LiteratureAutocompleteTemplate
-											item={item}
-											setAutocompleteHoverItem={setAutocompleteHoverItem}
-											op={op}
-											query={query}
-										/>
-									)}
-									classNames={classNames({ 'p-invalid': submitted && errorMessages.evidenceItem })}
+						<FormField
+							label="Reference"
+							required
+							{...fieldProps('evidenceItem', onReferenceChange)}
+							additionalDataField={<SingleReferenceAdditionalFieldData fieldData={newAnnotation.evidenceItem} />}
+						>
+							{(binding) => (
+								<SingleAutocomplete
+									{...binding}
+									search={singleReferenceSearch}
+									valueDisplay={singleReferenceSearchConfig.valueDisplay}
 								/>
-							</div>
-							<div className={fieldDetailsColumnSize}>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'evidenceItem'} />
-								<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={'evidenceItem'} />
-								<SingleReferenceAdditionalFieldData fieldData={newAnnotation.evidenceItem} />
-							</div>
-						</div>
+							)}
+						</FormField>
 
-						<div className="grid">
-							<div className={labelColumnSize}>
-								<label htmlFor="evidenceCodes">
-									<font color={'red'}>*</font>Evidence Code
-								</label>
-							</div>
-							<div className={widgetColumnSize}>
-								<AutocompleteFormMultiEditor
-									customRef={evidenceCodesRef}
-									search={evidenceSearch}
-									initialValue={newAnnotation.evidenceCodes}
-									name="evidenceCodes"
-									label="Evidence Code"
-									fieldName="evidenceCodes"
-									onValueChangeHandler={onArrayFieldChange}
-									valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-										<EvidenceAutocompleteTemplate
-											item={item}
-											setAutocompleteHoverItem={setAutocompleteHoverItem}
-											op={op}
-											query={query}
-										/>
-									)}
-									classNames={classNames({ 'p-invalid': submitted && errorMessages.evidenceCodes })}
+						<FormField
+							label="Evidence Code"
+							required
+							{...fieldProps('evidenceCodes')}
+							additionalDataField={<EvidenceCodesAdditionalFieldData fieldData={newAnnotation.evidenceCodes} />}
+						>
+							{(binding) => (
+								<MultiAutocomplete
+									{...binding}
+									search={evidenceCodesSearch}
+									valueDisplay={evidenceCodesSearchConfig.valueDisplay}
 								/>
-							</div>
-							<div className={fieldDetailsColumnSize}>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'evidenceCodes'} />
-								<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={'evidenceCodes'} />
-								<EvidenceCodesAdditionalFieldData fieldData={newAnnotation.evidenceCodes} />
-							</div>
-						</div>
+							)}
+						</FormField>
 
 						{selectedFormFields?.includes('With') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="with">With</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<AutocompleteFormMultiEditor
-											customRef={withRef}
-											search={withSearch}
-											name="with"
-											label="With"
-											fieldName="with"
-											subField="primaryExternalId"
-											initialValue={newAnnotation.with}
-											onValueChangeHandler={onArrayFieldChange}
-											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-												<SubjectAutocompleteTemplate
-													item={item}
-													setAutocompleteHoverItem={setAutocompleteHoverItem}
-													op={op}
-													query={query}
-												/>
-											)}
-											classNames={classNames({ 'p-invalid': submitted && errorMessages.with })}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'with'} />
-										<WithAdditionalFieldData fieldData={newAnnotation.with} />
-									</div>
-								</div>
-							</>
+							<FormField
+								label="With"
+								{...fieldProps('with')}
+								additionalDataField={<WithAdditionalFieldData fieldData={newAnnotation.with} />}
+							>
+								{(binding) => (
+									<MultiAutocomplete
+										{...binding}
+										search={withSearch}
+										subField="primaryExternalId"
+										valueDisplay={withSearchConfig.valueDisplay}
+									/>
+								)}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('Related Notes') && (
 							<>
 								<div className="grid">
-									<div className={labelColumnSize}>
-										<label>Related Notes</label>
+									<div className={NEW_ANNOTATION_FIELD_LAYOUT.labelColumnSize}>
+										<h2 className={NEW_ANNOTATION_FIELD_LAYOUT.labelClassName}>Related Notes</h2>
 									</div>
 									<div
 										className={classNames('col-9', {
@@ -833,8 +557,7 @@ export const NewAnnotationForm = ({
 											errorMessages={relatedNotesErrorMessages}
 											editingRows={relatedNotesEditingRows}
 										/>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'relatedNotes'} />
-										<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={'relatedNotes'} />
+										<FieldErrors messages={[normalizeError(fieldErrors.relatedNotes)]} layout="text" />
 									</div>
 								</div>
 							</>
@@ -843,8 +566,8 @@ export const NewAnnotationForm = ({
 						{selectedFormFields?.includes('Experimental Conditions') && (
 							<>
 								<div className="grid">
-									<div className={labelColumnSize}>
-										<label>Experimental Conditions</label>
+									<div className={NEW_ANNOTATION_FIELD_LAYOUT.labelColumnSize}>
+										<h2 className={NEW_ANNOTATION_FIELD_LAYOUT.labelClassName}>Experimental Conditions</h2>
 									</div>
 									<div className={classNames('col-9')}>
 										<ConditionRelationsForm
@@ -860,307 +583,138 @@ export const NewAnnotationForm = ({
 							</>
 						)}
 
-						{(mod?.includes('ZFINStaff')
-							? (required = requiredfield)
-							: selectedFormFields?.includes('Experiments')) && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="experiments">{required}Experiments</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<ConditionHandleFormDropdown
-											name="experiments"
-											customRef={experimentsRef}
-											editorChange={onDropdownExperimentsFieldChange}
-											referenceCurie={newAnnotation.evidenceItem?.curie}
-											value={newAnnotation.conditionRelations?.[0]?.handle}
-											showClear={true}
-											placeholderText={newAnnotation.conditionRelations?.[0]?.handle}
-											isEnabled={isExperimentEnabled()}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'conditionRelations'} />
-										<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={'conditionRelations'} />
-									</div>
-								</div>
-							</>
+						{(isExperimentRequired || selectedFormFields?.includes('Experiments')) && (
+							<FormField
+								label="Experiments"
+								required={isExperimentRequired}
+								name="experiments"
+								value={newAnnotation.conditionRelations?.[0] ?? null}
+								onChange={(experiment) => newAnnotationDispatch({ type: 'EDIT_EXPERIMENT', value: experiment })}
+								errors={fieldErrors}
+								errorField="conditionRelations"
+								{...NEW_ANNOTATION_FIELD_LAYOUT}
+							>
+								{(binding) => (
+									<VocabularySelect
+										{...binding}
+										options={experimentOptions}
+										optionLabel="handle"
+										dataKey="handle"
+										placeholder={newAnnotation.conditionRelations?.[0]?.handle}
+										onShow={loadExperimentOptions}
+										disabled={!isExperimentEnabled()}
+										showClear
+									/>
+								)}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('Genetic Sex') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="geneticSex">Genetic Sex</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<ControlledVocabularyFormDropdown
-											name="geneticSex"
-											options={geneticSexTerms || []}
-											editorChange={onDropdownFieldChange}
-											value={newAnnotation.geneticSex}
-											showClear={true}
-											className={classNames({ 'p-invalid': submitted && errorMessages.geneticSex })}
-											placeholderText={newAnnotation.geneticSex?.name}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'geneticSex'} />
-									</div>
-								</div>
-							</>
+							<FormField label="Genetic Sex" {...fieldProps('geneticSex')}>
+								{(binding) => <VocabularySelect {...binding} options={geneticSexTerms} dataKey="name" showClear />}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('Disease Qualifiers') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="diseaseQualifiers">Disease Qualifiers</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<ControlledVocabularyFormMultiSelectDropdown
-											name="diseaseQualifiers"
-											options={diseaseQualifiersTerms}
-											editorChange={onControlledVocabChange}
-											value={newAnnotation.diseaseQualifiers}
-											className={classNames({ 'p-invalid': submitted && errorMessages.diseaseQualifiers })}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'diseaseQualifiers'} />
-									</div>
-								</div>
-							</>
+							<FormField label="Disease Qualifiers" {...fieldProps('diseaseQualifiers')}>
+								{(binding) => <VocabularyMultiSelect {...binding} options={diseaseQualifiersTerms} dataKey="name" />}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('SGD Strain Background') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="sgdStrainBackground">SGD Strain Background</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<AutocompleteFormEditor
-											initialValue={newAnnotation.sgdStrainBackground}
-											search={sgdStrainBackgroundSearch}
-											searchService={searchService}
-											fieldName="sgdStrainBackground"
-											name="sgdStrainBackground"
-											label="SGD Strain Background"
-											subField="primaryExternalId"
-											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-												<SubjectAutocompleteTemplate
-													item={item}
-													setAutocompleteHoverItem={setAutocompleteHoverItem}
-													op={op}
-													query={query}
-												/>
-											)}
-											onValueChangeHandler={onSingleReferenceChange}
-											classNames={classNames({ 'p-invalid': submitted && errorMessages.sgdStrainBackground })}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'sgdStrainBackground'} />
-										<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={'sgdStrainBackground'} />
-										<SGDStrainBackgroundAdditionalFieldData fieldData={newAnnotation.sgdStrainBackground} />
-									</div>
-								</div>
-							</>
+							<FormField
+								label="SGD Strain Background"
+								{...fieldProps('sgdStrainBackground', editFieldClearingUiErrors('sgdStrainBackground'))}
+								additionalDataField={
+									<SGDStrainBackgroundAdditionalFieldData fieldData={newAnnotation.sgdStrainBackground} />
+								}
+							>
+								{(binding) => (
+									<SingleAutocomplete
+										{...binding}
+										search={sgdStrainBackgroundSearch}
+										subField="primaryExternalId"
+										valueDisplay={sgdStrainBackgroundSearchConfig.valueDisplay}
+									/>
+								)}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('Annotation Type') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="annotationType">Annotation Type</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<ControlledVocabularyFormDropdown
-											name="annotationType"
-											field="annotationType"
-											options={annotationTypeTerms}
-											editorChange={onDropdownFieldChange}
-											showClear={true}
-											value={newAnnotation.annotationType}
-											className={classNames({ 'p-invalid': submitted && errorMessages.annotationType })}
-											placeholderText={newAnnotation.annotationType?.name}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'annotationType'} />
-									</div>
-								</div>
-							</>
+							<FormField label="Annotation Type" {...fieldProps('annotationType')}>
+								{(binding) => <VocabularySelect {...binding} options={annotationTypeTerms} dataKey="name" showClear />}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('Genetic Modifier Relation') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="diseaseGeneticModifierRelation">Genetic Modifier Relation</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<ControlledVocabularyFormDropdown
-											name="diseaseGeneticModifierRelation"
-											field="diseaseGeneticModifierRelation"
-											options={geneticModifierRelationTerms}
-											editorChange={onDropdownFieldChange}
-											showClear={true}
-											value={newAnnotation.diseaseGeneticModifierRelation}
-											className={classNames({ 'p-invalid': submitted && errorMessages.diseaseGeneticModifierRelation })}
-											placeholderText={newAnnotation.diseaseGeneticModifierRelation?.name}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent
-											errorMessages={errorMessages}
-											errorField={'diseaseGeneticModifierRelation'}
-										/>
-										<FormErrorMessageComponent
-											errorMessages={uiErrorMessages}
-											errorField={'diseaseGeneticModifierRelation'}
-										/>
-									</div>
-								</div>
-							</>
+							<FormField label="Genetic Modifier Relation" {...fieldProps('diseaseGeneticModifierRelation')}>
+								{(binding) => (
+									<VocabularySelect {...binding} options={geneticModifierRelationTerms} dataKey="name" showClear />
+								)}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('Genetic Modifier AGMs') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="diseaseGeneticModifierAgm">Genetic Modifier AGMs</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<AutocompleteFormMultiEditor
-											search={geneticModifierAgmsSearch}
-											initialValue={newAnnotation.diseaseGeneticModifierAgms}
-											fieldName="diseaseGeneticModifierAgms"
-											name="diseaseGeneticModifierAgms"
-											subField="primaryExternalId"
-											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-												<SubjectAutocompleteTemplate
-													item={item}
-													setAutocompleteHoverItem={setAutocompleteHoverItem}
-													op={op}
-													query={query}
-												/>
-											)}
-											onValueChangeHandler={onArrayFieldChange}
-											classNames={classNames({ 'p-invalid': submitted && errorMessages.diseaseGeneticModifierAgms })}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent
-											errorMessages={errorMessages}
-											errorField={'diseaseGeneticModifierAgms'}
-										/>
-										<GeneticModifierAgmsAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifierAgms} />
-									</div>
-								</div>
-							</>
+							<FormField
+								label="Genetic Modifier AGMs"
+								{...fieldProps('diseaseGeneticModifierAgms')}
+								additionalDataField={
+									<GeneticModifierAgmsAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifierAgms} />
+								}
+							>
+								{(binding) => (
+									<MultiAutocomplete
+										{...binding}
+										search={diseaseGeneticModifierAgmsSearch}
+										subField="primaryExternalId"
+										valueDisplay={diseaseGeneticModifierAgmsSearchConfig.valueDisplay}
+									/>
+								)}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('Genetic Modifier Alleles') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="diseaseGeneticModifierAllele">Genetic Modifier Alleles</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<AutocompleteFormMultiEditor
-											search={geneticModifierAllelesSearch}
-											initialValue={newAnnotation.diseaseGeneticModifierAlleles}
-											fieldName="diseaseGeneticModifierAlleles"
-											name="diseaseGeneticModifierAlleles"
-											subField="primaryExternalId"
-											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-												<SubjectAutocompleteTemplate
-													item={item}
-													setAutocompleteHoverItem={setAutocompleteHoverItem}
-													op={op}
-													query={query}
-												/>
-											)}
-											onValueChangeHandler={onArrayFieldChange}
-											classNames={classNames({ 'p-invalid': submitted && errorMessages.diseaseGeneticModifierAlleles })}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent
-											errorMessages={errorMessages}
-											errorField={'diseaseGeneticModifierAlleles'}
-										/>
-										<GeneticModifierAllelesAdditionalFieldData
-											fieldData={newAnnotation.diseaseGeneticModifierAlleles}
-										/>
-									</div>
-								</div>
-							</>
+							<FormField
+								label="Genetic Modifier Alleles"
+								{...fieldProps('diseaseGeneticModifierAlleles')}
+								additionalDataField={
+									<GeneticModifierAllelesAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifierAlleles} />
+								}
+							>
+								{(binding) => (
+									<MultiAutocomplete
+										{...binding}
+										search={diseaseGeneticModifierAllelesSearch}
+										subField="primaryExternalId"
+										valueDisplay={diseaseGeneticModifierAllelesSearchConfig.valueDisplay}
+									/>
+								)}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('Genetic Modifier Genes') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="diseaseGeneticModifierGene">Genetic Modifier Genes</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<AutocompleteFormMultiEditor
-											search={geneticModifierGenesSearch}
-											initialValue={newAnnotation.diseaseGeneticModifierGenes}
-											fieldName="diseaseGeneticModifierGenes"
-											name="diseaseGeneticModifierGenes"
-											subField="primaryExternalId"
-											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-												<SubjectAutocompleteTemplate
-													item={item}
-													setAutocompleteHoverItem={setAutocompleteHoverItem}
-													op={op}
-													query={query}
-												/>
-											)}
-											onValueChangeHandler={onArrayFieldChange}
-											classNames={classNames({ 'p-invalid': submitted && errorMessages.diseaseGeneticModifierGenes })}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent
-											errorMessages={errorMessages}
-											errorField={'diseaseGeneticModifierGenes'}
-										/>
-										<GeneticModifierGenesAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifierGenes} />
-									</div>
-								</div>
-							</>
+							<FormField
+								label="Genetic Modifier Genes"
+								{...fieldProps('diseaseGeneticModifierGenes')}
+								additionalDataField={
+									<GeneticModifierGenesAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifierGenes} />
+								}
+							>
+								{(binding) => (
+									<MultiAutocomplete
+										{...binding}
+										search={diseaseGeneticModifierGenesSearch}
+										subField="primaryExternalId"
+										valueDisplay={diseaseGeneticModifierGenesSearchConfig.valueDisplay}
+									/>
+								)}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('Internal') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="internal">
-											<font color={'red'}>*</font>Internal
-										</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<Dropdown
-											name="internal"
-											value={newAnnotation.internal}
-											options={booleanTerms?.terms || []}
-											optionLabel="text"
-											optionValue="name"
-											onChange={onDropdownFieldChange}
-											className={classNames({ 'p-invalid': submitted && errorMessages.internal })}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'internal'} />
-									</div>
-								</div>
-							</>
+							<FormField label="Internal" required {...fieldProps('internal')}>
+								{(binding) => <BooleanSelect {...binding} />}
+							</FormField>
 						)}
 					</form>
 				</ErrorBoundary>

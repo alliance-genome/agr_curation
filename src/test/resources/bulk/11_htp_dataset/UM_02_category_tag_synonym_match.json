@@ -1,0 +1,15 @@
+[
+  {
+    "htp_expression_dataset_dto": {
+      "curie": "HTPDATASETTEST:HtpDataset0001"
+    },
+    "name": "TEST HTP DATASET TITLE",
+    "category_tag_names": [
+      "gene expression - general",
+      "response to chemical"
+    ],
+    "data_provider_dto": {
+      "source_organization_abbreviation": "FB"
+    }
+  }
+]

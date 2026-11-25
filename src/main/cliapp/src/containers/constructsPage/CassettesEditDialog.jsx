@@ -15,6 +15,7 @@ import { AutocompleteSingleTableEditor } from '../../components/Editors/autocomp
 import { Endpoints } from '../../constants/Endpoints';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../constants/FilterFields';
 import { cassetteDisplayValue } from './utils';
+import { markPendingEdits } from '../../utils/pendingEdits';
 
 const OBJECT_FIELD = 'constructCassetteAssociationObject';
 
@@ -25,11 +26,22 @@ const cassetteSearchConfig = {
 	valueDisplay: (item) => <div>{cassetteDisplayValue(item)}</div>,
 };
 
+/**
+ * The construct cassettes pop-up. The cassettes a construct holds are read only and can only be removed; a new row
+ * picks a cassette from the autosuggest. Keep Edits hands the rows to `onKeepEdits` when given, as the detail page
+ * does, and otherwise to the construct table's row editor.
+ *
+ * @param {Object} props
+ * @param {Function} [props.onKeepEdits] - takes the rows, each with its `dataKey`
+ * @param {Object} [props.initialErrorMessages] - row errors, keyed by `dataKey`, to show when the pop-up opens
+ */
 export const CassettesEditDialog = ({
 	originalCassettesData,
 	setOriginalCassettesData,
 	errorMessagesMainRow,
 	setErrorMessagesMainRow,
+	onKeepEdits,
+	initialErrorMessages,
 }) => {
 	const { originalCassettes, isInEdit, dialog, rowIndex, mainRowProps } = originalCassettesData;
 	const [localCassettes, setLocalCassettes] = useState([]);
@@ -49,10 +61,12 @@ export const CassettesEditDialog = ({
 
 	const showDialogHandler = () => {
 		const _localCassettes = structuredClone(originalCassettes || []);
-		_localCassettes.forEach(addDataKey);
+		_localCassettes.forEach((row) => {
+			if (!row.dataKey) addDataKey(row);
+		});
 		setLocalCassettes(_localCassettes);
 		setEditingRows({});
-		setErrorMessages({});
+		setErrorMessages(initialErrorMessages ?? {});
 	};
 
 	const hideDialog = () => {
@@ -89,13 +103,14 @@ export const CassettesEditDialog = ({
 
 	const saveDataHandler = () => {
 		const _localCassettes = structuredClone(localCassettes);
-		_localCassettes.forEach((row) => delete row.dataKey);
-		mainRowProps?.editorCallback?.(_localCassettes);
+		if (onKeepEdits) {
+			onKeepEdits(_localCassettes);
+		} else {
+			_localCassettes.forEach((row) => delete row.dataKey);
+			mainRowProps?.editorCallback?.(_localCassettes);
 
-		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
-		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex].constructCassetteAssociations = { severity: 'warn', message: 'Pending Edits!' };
-		setErrorMessagesMainRow({ ...errorMessagesCopy });
+			setErrorMessagesMainRow(markPendingEdits(errorMessagesMainRow, rowIndex, 'constructCassetteAssociations'));
+		}
 
 		setOriginalCassettesData((originalCassettesData) => ({
 			...originalCassettesData,

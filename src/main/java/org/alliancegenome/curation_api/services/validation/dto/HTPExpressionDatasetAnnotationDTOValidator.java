@@ -18,11 +18,14 @@ import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.HTPExpressionDatasetAnnotationDTO;
+import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.ExternalDataBaseEntityService;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.AuditedObjectDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,6 +50,7 @@ public class HTPExpressionDatasetAnnotationDTOValidator extends AuditedObjectDTO
 	@Inject AnalysisDTOValidator analysisDtoValidator;
 	@Inject CurieMintService curieMintService;
 	@Inject CrossReferenceDAO crossReferenceDAO;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	@Transactional
 	public ObjectResponse<HTPExpressionDatasetAnnotation> validateHTPExpressionDatasetAnnotationDTO(HTPExpressionDatasetAnnotationDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
@@ -121,7 +125,7 @@ public class HTPExpressionDatasetAnnotationDTOValidator extends AuditedObjectDTO
 			htpAnnotation.setSubSeries(null);
 		}
 
-		htpAnnotation.setCategoryTags(validateRequiredTermsInVocabulary("category_tag_names", dto.getCategoryTagNames(), VocabularyConstants.HTP_DATASET_CATEGORY_TAGS_VOCABULARY));
+		htpAnnotation.setCategoryTags(validateCategoryTagNames(dto.getCategoryTagNames()));
 
 		String submittedDataProvider = dto.getDataProviderDto() == null ? null : dto.getDataProviderDto().getSourceOrganizationAbbreviation();
 		if (StringUtils.isBlank(submittedDataProvider)) {
@@ -171,6 +175,47 @@ public class HTPExpressionDatasetAnnotationDTOValidator extends AuditedObjectDTO
 		response.setEntity(htpExpressionDatasetAnnotationDAO.persist(htpAnnotation));
 
 		return response;
+	}
+
+	// Ported from HTPExpressionDatasetAnnotationFmsDTOValidator - DQMs submit either a term's name or
+	// one of its synonyms (e.g. "gene expression - general" is a synonym the curators use
+	// interchangeably with the canonical term name), so this has to match on both, unlike the generic
+	// validateRequiredTermsInVocabulary helper used elsewhere, which only matches by exact name.
+	private List<VocabularyTerm> validateCategoryTagNames(List<String> categoryTagNames) {
+		if (CollectionUtils.isEmpty(categoryTagNames)) {
+			response.addErrorMessage("category_tag_names", ValidationConstants.REQUIRED_MESSAGE);
+			return null;
+		}
+
+		Map<String, VocabularyTerm> categoryTags = new HashMap<>();
+		for (String categoryTagName : categoryTagNames) {
+			if (StringUtils.isBlank(categoryTagName)) {
+				continue;
+			}
+			Map<String, Object> params = new HashMap<>();
+			params.put("name", categoryTagName);
+			params.put("query_operator", "or");
+			params.put("synonyms", categoryTagName);
+			SearchResponse<VocabularyTerm> searchResponse = vocabularyTermService.findByParams(new Pagination(), params);
+			VocabularyTerm matched = null;
+			if (searchResponse != null && searchResponse.getReturnedRecords() > 0) {
+				for (VocabularyTerm tag : searchResponse.getResults()) {
+					if (tag.getVocabulary().getName().equals("Data Set Category Tags") && (tag.getName().equals(categoryTagName) || tag.getSynonyms().contains(categoryTagName))) {
+						if (matched != null) {
+							response.addErrorMessage("category_tag_names", ValidationConstants.INVALID_MESSAGE + " Multiple Tags found in the Vocabulary (" + categoryTagName + ")");
+						} else {
+							matched = tag;
+						}
+					}
+				}
+			}
+			if (matched == null) {
+				response.addErrorMessage("category_tag_names", ValidationConstants.INVALID_MESSAGE + " (" + categoryTagName + ")");
+			} else {
+				categoryTags.put(categoryTagName, matched);
+			}
+		}
+		return new ArrayList<>(categoryTags.values());
 	}
 
 }

@@ -19,7 +19,8 @@ import 'react18-json-view/src/style.css';
 import 'react18-json-view/src/dark.css';
 import './ProfileComponent.css';
 import { PersonSettingsService } from '../../service/PersonSettingsService';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
+import { BooleanSelect } from '../../components/Editors/widgets/BooleanSelect';
+import { isDebugOn } from '../../utils/siteSettings';
 import { Toast } from 'primereact/toast';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -33,7 +34,7 @@ const initialThemeState = {
 };
 
 const initialSiteState = {
-	debug: 'false',
+	debug: false,
 };
 
 export const ProfileComponent = () => {
@@ -60,7 +61,6 @@ export const ProfileComponent = () => {
 	const selectedAffiliation = override || getTrueStaffGroups()[0] || null;
 
 	const personSettingsService = new PersonSettingsService();
-	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 
 	const globalResetHandler = async () => {
 		if (!localUserInfo?.settings?.length) return;
@@ -218,27 +218,15 @@ export const ProfileComponent = () => {
 		);
 	};
 
-	const debugChange = (event) => {
-		let _siteState = {
-			...siteState,
-			debug: event.value,
-		};
-		setSiteState(_siteState);
+	const debugChange = (debug) => {
+		setSiteState({ ...siteState, debug });
 	};
 
 	const siteTemplate = (settings) => {
 		return (
 			<div>
 				<div>
-					Debug:{' '}
-					<Dropdown
-						name={'Debug'}
-						value={siteState.debug}
-						options={booleanTerms?.terms || []}
-						optionLabel="text"
-						optionValue="text"
-						onChange={debugChange}
-					/>
+					Debug: <BooleanSelect name="Debug" value={isDebugOn(siteState)} onChange={debugChange} />
 				</div>
 			</div>
 		);

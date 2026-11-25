@@ -1,4 +1,5 @@
 import { BaseAuthService } from './BaseAuthService';
+import { isDebugOn } from '../utils/siteSettings';
 
 export class SearchService extends BaseAuthService {
 	search(endpoint, rows, page, sorts, filters, sortMapping, aggregationFields, nonNullFieldsTable) {
@@ -21,7 +22,7 @@ export class SearchService extends BaseAuthService {
 		searchOptions['nonNullFieldsTable'] = nonNullFieldsTable;
 
 		const siteSettings = JSON.parse(localStorage.getItem('siteSettings'));
-		searchOptions['debug'] = siteSettings?.debug === 'true' ? 'true' : 'false';
+		searchOptions['debug'] = isDebugOn(siteSettings) ? 'true' : 'false';
 		return this.api.post(`/${endpoint}/search?limit=${rows}&page=${page}`, searchOptions).then((res) => res.data);
 	}
 

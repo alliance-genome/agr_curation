@@ -16,16 +16,24 @@ import { BooleanTableEditor } from '../Editors/dropdown/boolean/BooleanTableEdit
  * @param {Function} onRowEditChange - PrimeReact row-edit handler
  * @param {object} tableRef - ref to the DataTable
  * @param {Function} deletionHandler - `(event, dataKey)`
+ * @param {boolean} [plainIds] - whether the rows are plain IDs, without the internal flag and evidence
  * @returns {JSX.Element}
  */
-export const SecondaryIdsFormTable = ({ secondaryIds, editingRows, onRowEditChange, tableRef, deletionHandler }) => {
+export const SecondaryIdsFormTable = ({
+	secondaryIds,
+	editingRows,
+	onRowEditChange,
+	tableRef,
+	deletionHandler,
+	plainIds = false,
+}) => {
 	const headerGroup = (
 		<ColumnGroup>
 			<Row>
 				<Column header="Actions" />
 				<Column header="Secondary ID" />
-				<Column header="Internal" />
-				<Column header="Evidence" />
+				{!plainIds && <Column header="Internal" />}
+				{!plainIds && <Column header="Evidence" />}
 			</Row>
 		</ColumnGroup>
 	);
@@ -61,18 +69,22 @@ export const SecondaryIdsFormTable = ({ secondaryIds, editingRows, onRowEditChan
 				headerClassName="surface-0"
 				className="w-4"
 			/>
-			<Column
-				editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
-				field="internal"
-				header="Internal"
-				headerClassName="surface-0"
-			/>
-			<Column
-				editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
-				field="evidence"
-				header="Evidence"
-				headerClassName="surface-0"
-			/>
+			{!plainIds && (
+				<Column
+					editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
+					field="internal"
+					header="Internal"
+					headerClassName="surface-0"
+				/>
+			)}
+			{!plainIds && (
+				<Column
+					editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
+					field="evidence"
+					header="Evidence"
+					headerClassName="surface-0"
+				/>
+			)}
 		</DataTable>
 	);
 };

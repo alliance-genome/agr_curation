@@ -65,6 +65,16 @@ const renderForm = ({ pendingFields } = {}) => {
 };
 
 describe('<GeneForm /> detail fields', () => {
+	it.each(['Curie', 'Gene Type', 'Internal'])(
+		'lays %s out as its label, the widget, then its additional data',
+		(label) => {
+			renderForm();
+
+			const columns = [...fieldRow(label).children].map((column) => column.className);
+			expect(columns).toEqual(['col-3', 'col-4', 'col-5']);
+		}
+	);
+
 	it.each(ONTOLOGY_FIELDS)('shows the loaded %s', (label, field, curie) => {
 		renderForm();
 

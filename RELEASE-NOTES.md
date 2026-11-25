@@ -2,6 +2,45 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.55.1
+* Fixes and maintenance
+   * Delete the 37,635 WB cassettes made by the construct-to-cassette migration that WB has since submitted under the same identifier, so the WB Construct and Construct Association loads run again (SCRUM-6890)
+   * Log minted MaTI curie ranges at DEBUG instead of INFO, as loads mint one curie per record
+
+## v0.55.0
+* New features:
+   * Create, copy, delete and deprecate genes, with an editable gene detail page (SCRUM-6366, SCRUM-6367, SCRUM-6782, SCRUM-6783)
+   * Reject new genes that duplicate an existing symbol and taxon, and check only symbols for duplicate gene and allele symbols (SCRUM-6365, SCRUM-6366)
+   * Drop the MOD identifier requirement on genes (SCRUM-6366)
+   * Duplicate and delete AGMs (SCRUM-6357) and clone and delete variants (SCRUM-6177)
+   * Keep values on save and add another on the allele, AGM, variant and gene create pages (SCRUM-6744, SCRUM-6366)
+   * Keep secondary IDs and cross references when cloning alleles (SCRUM-6785) and genes (SCRUM-6367)
+   * Read and save allele detail references (SCRUM-6626), gene associations (SCRUM-6628), related notes and slot annotation lists (SCRUM-6687) through their own sub-resources, with pending markers and per-section saves
+   * Show save progress and a not-found message on the allele detail and create pages (SCRUM-6687)
+   * Make the Cassettes table editable (SCRUM-6746), including its component columns (SCRUM-6752)
+   * Create a cassette detail page (SCRUM-6747) and enable creation (SCRUM-6748), duplication, deletion and deprecation (SCRUM-6749) of cassettes
+   * Add a read-only pop-up for the cassettes' STR components (SCRUM-6758)
+   * Add a read-only Transgenic Tools table (SCRUM-6385), a transgenic tool detail page (SCRUM-6655) and table editing of transgenic tools (SCRUM-6654)
+   * Enable table editing of Constructs (SCRUM-6388)
+   * Add a Sequence Targeting Reagents table showing the taxon ID, and stop duplicating STR gene associations (SCRUM-6685)
+   * Mint AGRKB curies for cassettes and transgenic tools (SCRUM-6693) and antibodies (SCRUM-6712) on load and on curator create
+   * Add read-only tables for HTP expression dataset annotations (SCRUM-6178) and dataset sample annotations (SCRUM-6532), with pop-up fields (SCRUM-6179, SCRUM-6533)
+   * Add an HTP expression dataset annotation detail page (SCRUM-6174)
+   * Add Associated STRs to the AGM table and detail page (SCRUM-6615)
+   * Add a Genomic Locations column and pop-up to the Variants table (SCRUM-6686) and a Genomic Locations table to the variant detail page (SCRUM-6735)
+   * Generate and display a unique ID for variants (SCRUM-6677)
+   * Export the HGVS of a data provider's variants (SCRUM-6757)
+   * Add per-entity reindex buttons to the Entity Counts page (SCRUM-6821)
+   * Move the allele subforms, dialogs and cross references table onto TableField (SCRUM-6661) and the detail page fields onto FormField (SCRUM-6835)
+* Fixes and maintenance
+   * Send related note evidence in the gene, AGM, STR, disease annotation and expression annotation views (SCRUM-6825)
+   * Retire the resource descriptor load (SCRUM-6558)
+   * Make the HTP Sample Type and Sample Assay Used filters match ontology term curies
+   * Restore AnatomicalSite list-field searchability
+   * Add curation and MaTI DB rolldown commands to the deployment steps (SCRUM-6832)
+   * Tune OpenSearch shard count and indexing settings
+   * Build curation Docker images on arm64 runners (SCRUM-6647), resize the database instance and machine swap, and upgrade central-publishing-maven-plugin to 0.12.0 (SCRUM-6832) (v0.54.1)
+
 ## v0.54.0
 * New features:
    * Implement the new constructs model: transgenic tools, cassettes and their associations, with loads and API, on LinkML 2.19.0 (SCRUM-6382, SCRUM-6535)

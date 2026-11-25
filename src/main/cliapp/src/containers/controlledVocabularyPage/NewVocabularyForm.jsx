@@ -5,10 +5,9 @@ import { classNames } from 'primereact/utils';
 import { Button } from 'primereact/button';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
-import { Dropdown } from 'primereact/dropdown';
 import { VocabularyService } from '../../service/VocabularyService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
+import { BooleanSelect } from '../../components/Editors/widgets/BooleanSelect';
 
 export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog, setNewVocabulary }) => {
 	const queryClient = useQueryClient();
@@ -24,8 +23,6 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog,
 
 	let emptyVocabulary = {};
 	let vocabularyService = null;
-
-	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 
 	const mutation = useMutation({
 		mutationFn: (newVocabularyName) => {
@@ -154,16 +151,12 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog,
 					</div>
 					<div className="field">
 						<label htmlFor="obsolete">Obsolete</label>
-						<Dropdown
+						<BooleanSelect
 							id="obsolete"
 							value={vocabulary.obsolete}
-							options={booleanTerms?.terms || []}
-							optionLabel="text"
-							optionValue="name"
-							onChange={(e) => onObsoleteChange(e.target?.value)}
-							className={classNames({
-								'p-invalid': submitted && (vocabulary.obsolete === null || vocabulary.obsolete === undefined),
-							})}
+							name="Obsolete"
+							onChange={onObsoleteChange}
+							invalid={submitted && (vocabulary.obsolete === null || vocabulary.obsolete === undefined)}
 						/>
 						{submitted && (vocabulary.obsolete === null || vocabulary.obsolete === undefined) && (
 							<small className="p-error">Obsolete is required.</small>

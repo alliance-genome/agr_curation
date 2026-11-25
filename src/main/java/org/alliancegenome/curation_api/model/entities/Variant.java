@@ -118,12 +118,12 @@ public class Variant extends GenomicEntity {
 		@Index(name = "variant_reference_variant_index", columnList = "variant_id"),
 		@Index(name = "variant_reference_references_index", columnList = "references_id")
 	})
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class})
 	private List<Reference> references;
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
+	@JsonView({CurationView.VariantSummaryDocument.class})
 	public String getNucleotideChange() {
 		if (getVariantType() == null) {
 			return null;

@@ -6,10 +6,12 @@ import { Tooltip } from 'primereact/tooltip';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { evidenceTemplate } from '../../components/EvidenceComponent';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { Button } from 'primereact/button';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
-import { getIdentifier } from '../../utils/utils';
+import { getIdentifier, getRefStrings } from '../../utils/utils';
+import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
+import { ontologyTermLabel } from '../../components/Editors/autocomplete/ontology/utils';
 
 // "symbol (identifier)" of a gene or allele, "name (identifier)" of another genomic entity.
 const genomicEntityDisplayValue = (genomicEntity) => {
@@ -34,6 +36,8 @@ const genomicEntityDisplayValue = (genomicEntity) => {
  * @param {Function} [props.getComponentLabel] - the text shown for a component
  * @param {boolean} [props.showNotesAndEvidence] - whether to show the Related Notes and Evidence columns; a
  *        transgenic tool association has neither (SCRUM-6654)
+ * @param {boolean} [props.showComponentTypes] - whether to show the Component Types column, the SO terms of a
+ *        cassette's genomic entity association; no other association has them (SCRUM-6895)
  */
 export const GenomicComponentsDialog = ({
 	originalComponentsData,
@@ -44,6 +48,7 @@ export const GenomicComponentsDialog = ({
 	title = 'Component Associations',
 	getComponentLabel = genomicEntityDisplayValue,
 	showNotesAndEvidence = true,
+	showComponentTypes = false,
 }) => {
 	const { originalComponents, dialog } = originalComponentsData;
 	const [localComponents, setLocalComponents] = useState(null);
@@ -134,11 +139,17 @@ export const GenomicComponentsDialog = ({
 		);
 	};
 
+	// One SO term per line, as its name and curie
+	const componentTypesTemplate = (rowData) => (
+		<ObjectListTemplate list={rowData.componentTypes} stringTemplate={ontologyTermLabel} />
+	);
+
 	let headerGroup = (
 		<ColumnGroup>
 			<Row>
 				<Column header="Relation" />
 				<Column header="Component" />
+				<Column header="Component Types" hidden={!showComponentTypes} />
 				<Column header="RelatedNotes" hidden={!showNotesAndEvidence} />
 				<Column header="Evidence" hidden={!showNotesAndEvidence} />
 				<Column header="Updated By" />
@@ -172,6 +183,13 @@ export const GenomicComponentsDialog = ({
 							body={componentTemplate}
 						/>
 						<Column
+							field="componentTypes"
+							header="Component Types"
+							headerClassName="surface-0"
+							body={componentTypesTemplate}
+							hidden={!showComponentTypes}
+						/>
+						<Column
 							field="relatedNotes.freeText"
 							header="Related Notes"
 							headerClassName="surface-0"
@@ -182,7 +200,7 @@ export const GenomicComponentsDialog = ({
 							field="evidence.curie"
 							header="Evidence"
 							headerClassName="surface-0"
-							body={(rowData) => evidenceTemplate(rowData)}
+							body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />}
 							hidden={!showNotesAndEvidence}
 						/>
 						<Column field="updatedBy.uniqueId" header="Updated By" headerClassName="surface-0" />

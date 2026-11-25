@@ -3,7 +3,8 @@ import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
-import { evidenceTemplate } from '../../../components/EvidenceComponent';
+import { StringListTemplate } from '../../../components/Templates/StringListTemplate';
+import { getRefStrings } from '../../../utils/utils';
 
 export const NomenclatureEventsReadOnlyDialog = ({
 	originalNomenclatureEventsData,
@@ -58,7 +59,11 @@ export const NomenclatureEventsReadOnlyDialog = ({
 			<h3>Nomenclature Events</h3>
 			<DataTable value={localNomenclatureEvents} dataKey="dataKey" showGridlines>
 				<Column field="nomenclatureEvent.name" header="Nomenclature Event" body={nomenclatureEventTemplate} />
-				<Column field="evidence.curie" header="Evidence" body={(rowData) => evidenceTemplate(rowData)} />
+				<Column
+					field="evidence.curie"
+					header="Evidence"
+					body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />}
+				/>
 				<Column field="internal" header="Internal" body={internalTemplate} />
 				<Column field="obsolete" header="Obsolete" body={obsoleteTemplate} />
 				<Column field="updatedBy.uniqueId" header="Updated By" />

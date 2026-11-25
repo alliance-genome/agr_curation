@@ -29,9 +29,7 @@ export const GenericDataTable = (props) => {
 		endpoint,
 		columns,
 		headerButtons,
-		deletionEnabled,
 		handleDuplication,
-		duplicationEnabled,
 		hasDetails = false,
 		// Overrides for a table whose detail-page route differs from its REST search endpoint, or
 		// whose entities need a different identifier resolution than getIdentifier's default.
@@ -44,6 +42,11 @@ export const GenericDataTable = (props) => {
 		fetching,
 		isEditable,
 	} = props;
+
+	// SCRUM-6933: deleting and duplicating are edits, so a table that is not editable has neither column. Hiding
+	// their cells instead left their header cells in place, which shifted every row two columns left of its header.
+	const deletionEnabled = Boolean(props.deletionEnabled && isEditable);
+	const duplicationEnabled = Boolean(props.duplicationEnabled && isEditable);
 
 	const {
 		setSelectedColumnNames,
@@ -71,7 +74,7 @@ export const GenericDataTable = (props) => {
 		exceptionMessage,
 		errorMessages,
 		uiErrorMessages,
-	} = useGenericDataTable(props);
+	} = useGenericDataTable({ ...props, deletionEnabled, duplicationEnabled });
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
@@ -285,7 +288,7 @@ export const GenericDataTable = (props) => {
 							body={(props) => deleteAction(props, isInEditMode)}
 							filterElement={rowEditorFilterNameHeader}
 							showFilterMenu={false}
-							className={`text-center p-0 action-column ${isEditable ? 'visible' : 'hidden'}`}
+							className="text-center p-0 action-column"
 							bodyStyle={{ textAlign: 'center' }}
 							frozen
 							headerClassName="surface-0 action-column sticky"
@@ -301,7 +304,7 @@ export const GenericDataTable = (props) => {
 								<DuplicationAction props={props} handleDuplication={handleDuplication} disabled={isInEditMode} />
 							)}
 							showFilterMenu={false}
-							className={`text-center p-0 action-column ${isEditable ? 'visible' : 'hidden'}`}
+							className="text-center p-0 action-column"
 							bodyStyle={{ textAlign: 'center' }}
 							frozen
 							headerClassName="surface-0 action-column sticky"

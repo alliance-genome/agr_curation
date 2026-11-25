@@ -1,5 +1,5 @@
-import { buildAutocompleteFilter, autocompleteSearch, getIdentifier } from '../../../../utils/utils';
-import { SearchService } from '../../../../service/SearchService';
+import { buildSearchFn } from '../base/buildSearchFn';
+import { getIdentifier } from '../../../../utils/utils';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { EvidenceAutocompleteTemplate } from '../base/templates/EvidenceAutocompleteTemplate';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
@@ -104,13 +104,6 @@ export const conditionTaxonSearchConfig = {
 	endpoint: Endpoints.Ontology.NCBI_TAXON,
 	autocompleteFields: ontologyTermAutocompleteFields,
 	filterName: 'conditionTaxonFilter',
-};
-
-const buildSearchFn = (config) => (event, setFiltered, setInputValue) => {
-	const searchService = new SearchService();
-	setInputValue(event.query);
-	const filter = buildAutocompleteFilter(event, config.autocompleteFields);
-	autocompleteSearch(searchService, config.endpoint, config.filterName, filter, setFiltered, config.otherFilters);
 };
 
 export const mutationTypesSearch = buildSearchFn(mutationTypesSearchConfig);

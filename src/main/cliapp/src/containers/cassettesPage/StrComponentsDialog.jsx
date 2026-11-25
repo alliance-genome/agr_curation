@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { evidenceTemplate } from '../../components/EvidenceComponent';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
+import { getRefStrings } from '../../utils/utils';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
@@ -117,7 +118,7 @@ export const StrComponentsDialog = ({ strComponentsData, setStrComponentsData })
 					<Column
 						header="Association Evidence"
 						headerClassName="surface-0"
-						body={({ association }) => evidenceTemplate(association)}
+						body={({ association }) => <StringListTemplate list={getRefStrings(association?.evidence)} />}
 					/>
 					<Column
 						header="Component Related Notes"

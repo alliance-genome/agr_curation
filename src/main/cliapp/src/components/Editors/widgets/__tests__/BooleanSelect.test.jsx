@@ -50,6 +50,13 @@ describe('<BooleanSelect />', () => {
 		expect(container.querySelector('.p-dropdown-clear-icon')).not.toBeInTheDocument();
 	});
 
+	it('shows the placeholder while nothing is chosen', () => {
+		const { container } = render(
+			<BooleanSelect value={undefined} onChange={vi.fn()} name="internal" placeholder="Select if Scheduled" />
+		);
+		expect(container.querySelector('.p-dropdown-label')).toHaveTextContent('Select if Scheduled');
+	});
+
 	it('sets a DOM id so a label can be associated with it', () => {
 		const { container } = render(<BooleanSelect id="internal" value={true} onChange={vi.fn()} />);
 

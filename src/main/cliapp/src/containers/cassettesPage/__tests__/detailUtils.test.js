@@ -155,4 +155,16 @@ describe('copyComponentRows', () => {
 		expect(copies[0].dataKey).not.toBe('a');
 		expect(rows[0].id).toBe(41);
 	});
+
+	// SCRUM-6895: a cloned cassette keeps the component types of its genomic entity components
+	it('keeps the component types of a genomic entity component', () => {
+		const componentTypes = [{ id: 51, curie: 'SO:0000167', name: 'promoter' }];
+		const [copy] = copyComponentRows([
+			{ id: 43, dataKey: 'c', cassetteAssociationSubject: { id: 11 }, componentTypes, relatedNotes: [] },
+		]);
+
+		expect(copy.componentTypes).toEqual(componentTypes);
+		expect(copy.componentTypes).not.toBe(componentTypes);
+		expect(copy).not.toHaveProperty('id');
+	});
 });

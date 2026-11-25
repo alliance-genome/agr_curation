@@ -15,6 +15,7 @@ import { useLocalRowsStrategy } from '../../../components/Editors/fields/strateg
 import { UsesTableEditor } from '../../../components/Editors/autocomplete/ontology/UsesTableEditor';
 import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
+import { markPendingEdits } from '../../../utils/pendingEdits';
 
 /**
  * Dialog for editing the uses of a main-table row's cassette or transgenic tool: FBcv terms from the
@@ -119,14 +120,7 @@ export const UsesEditDialog = ({
 			mainRowProps.editorCallback(_localUses);
 		}
 
-		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
-		let messageObject = {
-			severity: 'warn',
-			message: 'Pending Edits!',
-		};
-		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex][field] = messageObject;
-		setErrorMessagesMainRow({ ...errorMessagesCopy });
+		setErrorMessagesMainRow(markPendingEdits(errorMessagesMainRow, rowIndex, field));
 
 		setOriginalUsesData((originalUsesData) => {
 			return {

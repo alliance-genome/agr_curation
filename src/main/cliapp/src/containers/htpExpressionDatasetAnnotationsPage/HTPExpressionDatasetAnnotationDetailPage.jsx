@@ -12,14 +12,12 @@ import { FormFieldVisibilityMenu, FormSection, useFormFieldVisibility } from '..
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
-import { ReferencesFormTable } from '../constructsPage/references/ReferencesFormTable';
+import { ReferencesFormTable } from './ReferencesFormTable';
 import { ExternalDataBaseEntityTable } from './ExternalDataBaseEntityTable';
 import { RelatedNotesTable } from './RelatedNotesTable';
 import { HTPExpressionDatasetSampleAnnotationsTable } from '../htpExpressionDatasetSampleAnnotationsPage/HTPExpressionDatasetSampleAnnotationsTable';
 import { HTPExpressionDatasetAnnotationService } from '../../service/HTPExpressionDatasetAnnotationService';
-
-const labelColumnSize = 'col-3';
-const widgetColumnSize = 'col-9';
+import { WIDE_DETAIL_FIELD_LAYOUT } from '../../components/Editors/fields/fieldLayouts';
 
 export const HTP_EXPRESSION_DATASET_DETAIL_TOGGLEABLE_FIELDS = [
 	'Expression Dataset',
@@ -111,9 +109,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Dataset Name')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Dataset Name"
 							formField={<StringTemplate string={dataset?.name} />}
 						/>
@@ -129,9 +125,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Dataset Category Tags')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Dataset Category Tags"
 							formField={<StringListTemplate list={dataset?.categoryTags?.map((term) => term.name)} />}
 						/>
@@ -139,9 +133,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Dataset Number of Channels')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Dataset Number of Channels"
 							formField={<StringTemplate string={dataset?.numberOfChannels} />}
 						/>
@@ -149,9 +141,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Dataset Laboratory of Origin')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Dataset Laboratory of Origin"
 							formField={<StringTemplate string={dataset?.laboratoryOfOrigin} />}
 						/>
@@ -188,9 +178,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Dataset Data Provider')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Dataset Data Provider"
 							formField={<StringTemplate string={dataset?.dataProvider?.abbreviation} />}
 						/>
@@ -198,9 +186,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Dataset Updated By')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Dataset Updated By"
 							formField={<StringTemplate string={dataset?.updatedBy?.uniqueId} />}
 						/>
@@ -208,9 +194,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Dataset Date Updated')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Dataset Date Updated"
 							formField={<StringTemplate string={dataset?.dateUpdated} />}
 						/>
@@ -218,9 +202,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Dataset Created By')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Dataset Created By"
 							formField={<StringTemplate string={dataset?.createdBy?.uniqueId} />}
 						/>
@@ -228,9 +210,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Dataset Date Created')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Dataset Date Created"
 							formField={<StringTemplate string={dataset?.dateCreated} />}
 						/>
@@ -238,9 +218,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Dataset Internal')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Dataset Internal"
 							formField={<BooleanTemplate value={dataset?.internal} />}
 						/>
@@ -248,9 +226,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 
 					<FormSection isVisible={isVisible('Dataset Obsolete')}>
 						<DetailPageFieldWrapper
-							labelColumnSize={labelColumnSize}
-							widgetColumnSize={widgetColumnSize}
-							showAdditionalData={false}
+							{...WIDE_DETAIL_FIELD_LAYOUT}
 							fieldName="Dataset Obsolete"
 							formField={<BooleanTemplate value={dataset?.obsolete} />}
 						/>
