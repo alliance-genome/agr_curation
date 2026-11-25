@@ -15,6 +15,7 @@ import { AutocompleteSingleTableEditor } from '../../components/Editors/autocomp
 import { Endpoints } from '../../constants/Endpoints';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../constants/FilterFields';
 import { cassetteDisplayValue } from './utils';
+import { markPendingEdits } from '../../utils/pendingEdits';
 
 const OBJECT_FIELD = 'constructCassetteAssociationObject';
 
@@ -108,10 +109,7 @@ export const CassettesEditDialog = ({
 			_localCassettes.forEach((row) => delete row.dataKey);
 			mainRowProps?.editorCallback?.(_localCassettes);
 
-			const errorMessagesCopy = structuredClone(errorMessagesMainRow);
-			errorMessagesCopy[rowIndex] = {};
-			errorMessagesCopy[rowIndex].constructCassetteAssociations = { severity: 'warn', message: 'Pending Edits!' };
-			setErrorMessagesMainRow({ ...errorMessagesCopy });
+			setErrorMessagesMainRow(markPendingEdits(errorMessagesMainRow, rowIndex, 'constructCassetteAssociations'));
 		}
 
 		setOriginalCassettesData((originalCassettesData) => ({
