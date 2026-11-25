@@ -39,7 +39,7 @@ public class HTPExpressionDatasetAnnotationDTO extends AuditedObjectDTO {
 	private List<String> referenceCuries;
 
 	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonProperty("related_note_dto")
+	@JsonProperty("note_dto")
 	private NoteDTO relatedNoteDto;
 
 	@JsonView({ CurationView.FieldsOnly.class })
