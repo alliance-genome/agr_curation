@@ -31,7 +31,7 @@ public class AnalysisDTO extends AuditedObjectDTO {
 	private DataProviderDTO dataProviderDto;
 
 	@JsonView({ CurationView.FieldsAndLists.class })
-	@JsonProperty("related_note_dtos")
+	@JsonProperty("note_dtos")
 	private List<NoteDTO> relatedNoteDtos;
 
 }

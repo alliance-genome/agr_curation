@@ -65,7 +65,7 @@ public class HTPExpressionDatasetSampleAnnotationDTO extends AuditedObjectDTO {
 	private String taxonCurie;
 
 	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonProperty("genetic_sex")
+	@JsonProperty("genetic_sex_name")
 	private String geneticSex;
 
 	@JsonView({ CurationView.FieldsOnly.class })
@@ -77,7 +77,7 @@ public class HTPExpressionDatasetSampleAnnotationDTO extends AuditedObjectDTO {
 	private List<String> assemblyVersions;
 
 	@JsonView({ CurationView.FieldsAndLists.class })
-	@JsonProperty("related_note_dtos")
+	@JsonProperty("note_dtos")
 	private List<NoteDTO> relatedNoteDtos;
 
 	@JsonView({ CurationView.FieldsAndLists.class })
