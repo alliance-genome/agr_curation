@@ -167,7 +167,7 @@ public class IT_0111_HTPExpressionDatasetAnnotationBulkUploadITCase extends Base
 		// submit either interchangeably. "gene expression - general" is a seeded synonym of the
 		// "baseline" term (v0.35.0.9__add_htp_tags.sql). "response to chemical" is a synonym of
 		// "chemical stimulus" that was removed from alpha outside of a migration (separate bug) and
-		// restored by v0.55.0.6__restore_chemical_stimulus_response_to_chemical_synonym.sql.
+		// restored by v0.55.0.7__restore_chemical_stimulus_response_to_chemical_synonym.sql.
 		checkSuccessfulBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "UM_02_category_tag_synonym_match.json");
 
 		RestAssured.given().
