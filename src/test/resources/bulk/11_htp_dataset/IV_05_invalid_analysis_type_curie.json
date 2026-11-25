@@ -24,7 +24,7 @@
     "reference_curies": [
       "PMID:25920550"
     ],
-    "related_note_dto": {
+    "note_dto": {
       "free_text": "Test HTP dataset note",
       "note_type_name": "htp_expression_dataset_summary",
       "internal": false,
@@ -37,7 +37,7 @@
     "symbol": "htp-test-symbol",
     "analysis_dto": {
       "analysis_type_curie": "FBcv:NOTAREALCURIE9999",
-      "related_note_dtos": [
+      "note_dtos": [
         {
           "free_text": "Test analysis note",
           "note_type_name": "htp_expression_dataset_summary",

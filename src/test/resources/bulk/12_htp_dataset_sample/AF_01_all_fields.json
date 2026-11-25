@@ -71,7 +71,7 @@
     "assembly_versions": [
       "Zv9"
     ],
-    "related_note_dtos": [
+    "note_dtos": [
       {
         "free_text": "Test sample note",
         "note_type_name": "htp_expression_dataset_sample_note",
@@ -89,7 +89,7 @@
     "symbol": "htp-sample-test-symbol",
     "analysis_dto": {
       "analysis_type_curie": "HTPSAMPLETEST:Fbcv0001",
-      "related_note_dtos": [
+      "note_dtos": [
         {
           "free_text": "Test analysis note",
           "note_type_name": "htp_expression_dataset_sample_note",
