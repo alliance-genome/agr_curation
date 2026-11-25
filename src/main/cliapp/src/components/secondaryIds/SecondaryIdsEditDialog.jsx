@@ -14,6 +14,7 @@ import { useLocalRowsStrategy } from '../Editors/fields/strategies/useLocalRowsS
 import { InputTextTableEditor } from '../Editors/text/InputTextTableEditor';
 import { EvidenceTableEditor } from '../Editors/autocomplete/references/EvidenceTableEditor';
 import { BooleanTableEditor } from '../Editors/dropdown/boolean/BooleanTableEditor';
+import { markPendingEdits } from '../../utils/pendingEdits';
 
 /**
  * Dialog for editing a main-table row's secondary IDs. Edits stay local until Keep Edits
@@ -118,14 +119,7 @@ export const SecondaryIdsEditDialog = ({
 			mainRowProps.editorCallback(_localSecondaryIds);
 		}
 
-		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
-		let messageObject = {
-			severity: 'warn',
-			message: 'Pending Edits!',
-		};
-		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex][field] = messageObject;
-		setErrorMessagesMainRow({ ...errorMessagesCopy });
+		setErrorMessagesMainRow(markPendingEdits(errorMessagesMainRow, rowIndex, field));
 
 		setOriginalSecondaryIdsData((originalSecondaryIdsData) => {
 			return {

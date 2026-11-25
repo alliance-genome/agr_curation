@@ -17,6 +17,7 @@ import { MultiAutocomplete } from '../../../components/Editors/widgets/MultiAuto
 import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
 import { mutationTypeLabel, mutationTypesSearch } from '../../../components/Editors/autocomplete/ontology/utils';
+import { markPendingEdits } from '../../../utils/pendingEdits';
 
 /**
  * Dialog for editing a main-table row's mutation types. Edits stay local until Keep Edits
@@ -115,14 +116,7 @@ export const MutationTypesEditDialog = ({
 			mainRowProps.editorCallback(_localMutationTypes);
 		}
 
-		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
-		let messageObject = {
-			severity: 'warn',
-			message: 'Pending Edits!',
-		};
-		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]['alleleMutationTypes'] = messageObject;
-		setErrorMessagesMainRow({ ...errorMessagesCopy });
+		setErrorMessagesMainRow(markPendingEdits(errorMessagesMainRow, rowIndex, 'alleleMutationTypes'));
 
 		setOriginalMutationTypesData((originalMutationTypesData) => {
 			return {
