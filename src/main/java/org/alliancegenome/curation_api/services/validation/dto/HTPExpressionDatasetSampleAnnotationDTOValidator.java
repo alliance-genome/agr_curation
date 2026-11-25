@@ -137,7 +137,7 @@ public class HTPExpressionDatasetSampleAnnotationDTOValidator extends AuditedObj
 		}
 
 		htpSampleAnnotation.setTaxon(validateTaxon("taxon_curie", dto.getTaxonCurie()));
-		htpSampleAnnotation.setGeneticSex(validateTermInVocabulary("genetic_sex", dto.getGeneticSex(), VocabularyConstants.GENETIC_SEX_VOCABULARY));
+		htpSampleAnnotation.setGeneticSex(validateTermInVocabulary("genetic_sex_name", dto.getGeneticSex(), VocabularyConstants.GENETIC_SEX_VOCABULARY));
 		htpSampleAnnotation.setSequencingFormat(validateTermInVocabulary("sequencing_format", dto.getSequencingFormat(), VocabularyConstants.HTP_DATASET_SAMPLE_SEQUENCE_FORMAT_VOCABULARY));
 		htpSampleAnnotation.setAssemblyVersions(handleStringListField(dto.getAssemblyVersions()));
 
